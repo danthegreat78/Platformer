@@ -20,15 +20,10 @@ wall_x = 1240
 on_ground = False
 
 while running:
+    jump_pressed = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-        if event.type == pygame.KEYDOWN:
-            print(on_ground)
-            if event.key == pygame.K_w or event.key == pygame.K_SPACE:
-                if on_ground == True:
-                    velocity_y = -1000
 
 
 
@@ -47,11 +42,18 @@ while running:
         bottom = player_hitbox.bottom - ground_y.top
         top = ground_y.bottom - player_hitbox.top
 
-        if min(left, right, bottom, top) == bottom and velocity_y > 0:
+        if min(left, right, bottom, top) == bottom:
             player_hitbox.bottom = ground_y.top
             player_pos.y = player_hitbox.centery
             velocity_y = 0
             on_ground = True
+
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_w] or keys[pygame.K_SPACE]:
+        if on_ground:
+            velocity_y = -1000
+
 
 
  #   if player_pos.y > ground_y:
