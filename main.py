@@ -46,6 +46,9 @@ while running:
             player_pos.y = player_hitbox.centery
             velocity_y = 0
             on_ground = True
+        elif min(left, right, bottom, top) == right:
+            player_hitbox.left = ground_y.right
+            player_pos.x = player_hitbox.centerx
 
     keys = pygame.key.get_pressed()
 
