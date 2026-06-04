@@ -20,7 +20,6 @@ wall_x = 1240
 on_ground = False
 
 while running:
-    jump_pressed = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -56,12 +55,7 @@ while running:
 
 
 
- #   if player_pos.y > ground_y:
-  #      player_pos.y = ground_y
-   #     velocity_y = 0
 
-    #if(player_pos.x > wall_x):
-     #   player_pos.x = wall_x
 
     screen.fill("purple")
 
