@@ -1,5 +1,6 @@
 import pygame
 from Player import Player
+from Platform import Platform
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -11,6 +12,11 @@ camera_x = 0
 camera_y = 0
 
 player = Player(640, 100)
+
+platforms = [
+    Platform(0,680,1800,40),
+    Platform(400,500,300,40)
+]
 
 
 
@@ -35,6 +41,9 @@ while running:
 
     player.update(dt, keys, ground_y)
 
+
+
+
     camera_x = player.hitbox.centerx - screen.get_width() // 2
     camera_y = player.hitbox.centery - screen.get_height() // 2
 
@@ -42,11 +51,11 @@ while running:
 
     pygame.draw.rect(screen, "green", ground_y.move(-camera_x, -camera_y))
 
-    player.draw(screen, camera_x, camera_y)
+    for platform in platforms:
 
-   # screen.blit(player, (player_pos.x - player.get_width() / 2 -50,
-    #                     player_pos.y - player.get_height() / 2 + 185)) #ADJUST THIS
-    #pygame.draw.rect(screen, "red", player_hitbox, 2) # Shows player hitbox
+        platform.draw(screen, "green", camera_x, camera_y)
+
+    player.draw(screen, camera_x, camera_y)
 
 
     pygame.display.flip()
