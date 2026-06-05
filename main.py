@@ -7,6 +7,9 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
+camera_x = 0
+camera_y = 0
+
 player = Player(640, 100)
 
 
@@ -32,11 +35,14 @@ while running:
 
     player.update(dt, keys, ground_y)
 
+    camera_x = player.hitbox.centerx - screen.get_width() // 2
+    camera_y = player.hitbox.centery - screen.get_height() // 2
+
     screen.fill("purple")
 
-    pygame.draw.rect(screen, "green", ground_y)
+    pygame.draw.rect(screen, "green", ground_y.move(-camera_x, -camera_y))
 
-    player.draw(screen)
+    player.draw(screen, camera_x, camera_y)
 
    # screen.blit(player, (player_pos.x - player.get_width() / 2 -50,
     #                     player_pos.y - player.get_height() / 2 + 185)) #ADJUST THIS

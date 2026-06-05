@@ -65,6 +65,10 @@ class Player:
 
 
 
-    def draw(self, screen):
-        screen.blit(self.image, (self.hitbox.x + self.draw_offset.x, self.hitbox.y + self.draw_offset.y))
-        pygame.draw.rect(screen, "red", self.hitbox, 2)
+    def draw(self, screen, camera_x, camera_y):
+
+        draw_x = self.hitbox.x - camera_x
+        draw_y = self.hitbox.y - camera_y
+
+        screen.blit(self.image, (self.hitbox.x - camera_x + self.draw_offset.x, self.hitbox.y - camera_y+ self.draw_offset.y))
+        pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)
