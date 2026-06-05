@@ -8,13 +8,13 @@ class Slime:
         self.image = pygame.transform.scale(self.image, (500,500))
         self.hitbox = pygame.Rect(x,y,130,95)
 
-        self.hitbox_offset = pygame.Vector2(-164,-158)
+        self.offset = pygame.Vector2(-135,-145)
 
     def draw(self, screen, camera_x, camera_y):
 
-        draw_x = self.hitbox.x - camera_x + self.hitbox_offset.x
-        draw_y = self.hitbox.y - camera_y + self.hitbox_offset.y
+        draw_x = self.hitbox.x - camera_x
+        draw_y = self.hitbox.y - camera_y
 
-        screen.blit(self.image, (-camera_x, -camera_y))
+        screen.blit(self.image, (draw_x + self.offset.x, draw_y + self.offset.y))
 
         pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)

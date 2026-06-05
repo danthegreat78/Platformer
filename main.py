@@ -22,7 +22,8 @@ platforms = [
 ]
 
 slimes = [
-    Slime(300, 300)
+    Slime(300, 300),
+    Slime(100,100)
 ]
 
 font = pygame.font.SysFont("arial", 30)
