@@ -54,6 +54,12 @@ class Player:
             elif min(left, right, bottom, top) == right:
                 self.hitbox.left = ground_rect.right
 
+            elif min(left, right, bottom, top) == left:
+                self.hitbox.right = ground_rect.left
+
+            elif min(left, right, bottom, top) == top:
+                self.hitbox.top = ground_rect.bottom
+
         if self.jumper_buffer > 0:
             if self.on_ground:
                 self.velocity_y = -1000
