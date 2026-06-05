@@ -3,10 +3,10 @@ import pygame
 class Player:
 
     def __init__(self, x, y):
-        self.image = pygame.image.load("player.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (1000,1000))
+        self.image = pygame.image.load("simple-player.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (800,800))
 
-        self.hitbox = pygame.Rect(x,y,90,250)
+        self.hitbox = pygame.Rect(x,y,100,250)
 
         self.velocity_y = 0
 
@@ -16,7 +16,11 @@ class Player:
 
         self.jumper_buffer = 0
 
-        self.draw_offset = pygame.Vector2(-500, -190)
+        self.draw_offset = pygame.Vector2(-332, -190)
+
+        self.facing_right = False
+
+        self.flip_offset = pygame.Vector2(-35,0)
 
 
 
@@ -35,8 +39,10 @@ class Player:
         speed = 1000
         if keys[pygame.K_a]:
             self.hitbox.x -= speed * dt
+            self.facing_right = True
         if keys[pygame.K_d]:
             self.hitbox.x += speed * dt
+            self.facing_right = False
 
         self.on_ground = False
 
@@ -80,5 +86,15 @@ class Player:
         draw_x = self.hitbox.x - camera_x
         draw_y = self.hitbox.y - camera_y
 
-        screen.blit(self.image, (self.hitbox.x - camera_x + self.draw_offset.x, self.hitbox.y - camera_y+ self.draw_offset.y))
+        image = self.image
+
+        if(self.facing_right):
+            offset = self.draw_offset
+        else:
+            image = pygame.transform.flip(self.image, True, False)
+            offset = self.draw_offset + self.flip_offset
+
+        screen.blit(image,
+                    (self.hitbox.x - camera_x + offset.x, self.hitbox.y - camera_y + offset.y))
+
         pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)
