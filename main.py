@@ -28,6 +28,8 @@ running = True
 dt = 0
 show_hitboxes = False
 
+editing= False
+
 camera_x = 0
 camera_y = 0
 
@@ -68,6 +70,18 @@ while running:
                 save_level(platforms)
             elif event.key == pygame.K_l:
                 platforms = load_level()
+
+            elif event.key == pygame.K_e:
+                editing = not editing
+
+        if event.type == pygame.MOUSEBUTTONDOWN and editing:
+            print("building")
+            mx,my = pygame.mouse.get_pos()
+
+            world_x = mx + camera_x
+            world_y = my + camera_y
+
+            platforms.append(Platform(world_x, world_y, 100, 40))
 
 
 
