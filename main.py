@@ -76,6 +76,23 @@ while running:
         slime.draw(screen, camera_x, camera_y, show_hitboxes)
         slime.update(dt, keys, platforms)
 
+        if player.hitbox.colliderect(slime.hitbox):
+            left = player.hitbox.right - slime.hitbox.left
+            right = slime.hitbox.right - player.hitbox.left
+            bottom = player.hitbox.bottom - slime.hitbox.top
+            top = slime.hitbox.bottom - player.hitbox.top
+
+            side = min(left,right,top,bottom)
+
+            if side == bottom and player.velocity_y > 0:
+                slimes.remove(slime)
+                player.velocity_y = -500
+
+            else:
+                player.die()
+
+
+
     player.draw(screen, camera_x, camera_y, show_hitboxes)
 
 

@@ -100,3 +100,6 @@ class Player:
         if(show_hitboxes):
 
             pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)
+
+    def die(self):
+        print("PLAYER DIED")
