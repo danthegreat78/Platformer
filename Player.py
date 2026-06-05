@@ -20,7 +20,7 @@ class Player:
 
 
 
-    def update(self, dt, keys, ground_rect):
+    def update(self, dt, keys, platforms):
 
         if(self.jumper_buffer > 0):
             self.jumper_buffer -= dt
@@ -40,25 +40,29 @@ class Player:
 
         self.on_ground = False
 
-        if self.hitbox.colliderect(ground_rect):
-            left = self.hitbox.right - ground_rect.left
-            right = ground_rect.right - self.hitbox.left
-            bottom = self.hitbox.bottom - ground_rect.top
-            top = ground_rect.bottom - self.hitbox.top
+        for platform in platforms:
 
-            if min(left, right, bottom, top) == bottom:
-                self.hitbox.bottom = ground_rect.top
-                self.velocity_y = 0
-                self.on_ground = True
+            if self.hitbox.colliderect(platform.rect):
+                left = self.hitbox.right - platform.rect.left
+                right = platform.rect.right - self.hitbox.left
+                bottom = self.hitbox.bottom - platform.rect.top
+                top = platform.rect.bottom - self.hitbox.top
 
-            elif min(left, right, bottom, top) == right:
-                self.hitbox.left = ground_rect.right
+                side = min(left, right, top, bottom)
 
-            elif min(left, right, bottom, top) == left:
-                self.hitbox.right = ground_rect.left
+                if side == bottom:
+                    self.hitbox.bottom = platform.rect.top
+                    self.velocity_y = 0
+                    self.on_ground = True
 
-            elif min(left, right, bottom, top) == top:
-                self.hitbox.top = ground_rect.bottom
+                elif side == right:
+                        self.hitbox.left = platform.rect.right
+
+                elif min(left, right, bottom, top) == left:
+                    self.hitbox.right = platform.rect.left
+
+                elif min(left, right, bottom, top) == top:
+                    self.hitbox.top = platform.rect.bottom
 
         if self.jumper_buffer > 0:
             if self.on_ground:

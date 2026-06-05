@@ -14,14 +14,9 @@ camera_y = 0
 player = Player(640, 100)
 
 platforms = [
-    Platform(0,680,1800,40),
+    Platform(0,680,1000,40),
     Platform(400,500,300,40)
 ]
-
-
-
-
-ground_y = pygame.Rect(0, 680, 1000, 40)
 
 while running:
 
@@ -39,7 +34,7 @@ while running:
 
 
 
-    player.update(dt, keys, ground_y)
+    player.update(dt, keys, platforms)
 
 
 
@@ -48,8 +43,6 @@ while running:
     camera_y = player.hitbox.centery - screen.get_height() // 2
 
     screen.fill("purple")
-
-    pygame.draw.rect(screen, "green", ground_y.move(-camera_x, -camera_y))
 
     for platform in platforms:
 
