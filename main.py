@@ -2,6 +2,7 @@ import pygame
 from Player import Player
 from Platform import Platform
 from Sign import Sign
+from Slime import Slime
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -18,6 +19,10 @@ platforms = [
     Platform(0,680,1000,40),
     Platform(400,500,300,40),
     Platform(1800,680,200,40)
+]
+
+slimes = [
+    Slime(300, 300)
 ]
 
 font = pygame.font.SysFont("arial", 30)
@@ -61,6 +66,9 @@ while running:
 
     for sign in signs:
         sign.draw(screen, camera_x, camera_y)
+
+    for slime in slimes:
+        slime.draw(screen, camera_x, camera_y)
 
     player.draw(screen, camera_x, camera_y)
 
