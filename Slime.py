@@ -10,6 +10,31 @@ class Slime:
 
         self.offset = pygame.Vector2(-135,-145)
 
+        self.velocity_y = 0
+        self.gravity = 3000 # Original: 1800
+
+
+    def update(self, dt, keys, platforms):
+
+        self.velocity_y += self.gravity * dt
+        self.hitbox.y += self.velocity_y * dt
+
+        for platform in platforms:
+
+            if self.hitbox.colliderect(platform.rect):
+
+                left = self.hitbox.right - platform.rect.left
+                right = self.hitbox.right - platform.rect.left
+                bottom = self.hitbox.bottom - platform.rect.bottom
+                top = self.hitbox.bottom - platform.rect.left
+
+                side = min(left,right,bottom,top)
+
+                if side == bottom:
+                    self.hitbox.bottom = platform.rect.top
+                    self.velocity_y = 0
+
+
     def draw(self, screen, camera_x, camera_y, show_hitboxes):
 
         draw_x = self.hitbox.x - camera_x

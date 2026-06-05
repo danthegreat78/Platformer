@@ -59,6 +59,7 @@ while running:
 
 
 
+
     camera_x = player.hitbox.centerx - screen.get_width() // 2
     camera_y = player.hitbox.centery - screen.get_height() // 2
 
@@ -73,6 +74,7 @@ while running:
 
     for slime in slimes:
         slime.draw(screen, camera_x, camera_y, show_hitboxes)
+        slime.update(dt, keys, platforms)
 
     player.draw(screen, camera_x, camera_y, show_hitboxes)
 
