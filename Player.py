@@ -22,6 +22,8 @@ class Player:
 
         self.flip_offset = pygame.Vector2(-35,0)
 
+        self.alive = True
+
 
 
     def update(self, dt, keys, platforms):
@@ -102,4 +104,4 @@ class Player:
             pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)
 
     def die(self):
-        print("PLAYER DIED")
+        self.alive = False

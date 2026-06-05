@@ -3,6 +3,23 @@ from Player import Player
 from Platform import Platform
 from Sign import Sign
 from Slime import Slime
+import json
+
+def save_level(platforms):
+    data = []
+    print("saved")
+    for p in platforms:
+
+        data.append([p.rect.x, p.rect.y, p.rect.width, p.rect.height])
+
+    with open("level.json", "w") as f:
+            json.dump(data, f)
+
+def load_level():
+    with open("level.json", "r") as f:
+        data = json.load(f)
+
+    return [Platform(x,y,w,h) for x,y,w,h in data]
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -47,6 +64,11 @@ while running:
             elif event.key == pygame.K_h:
                 show_hitboxes = not show_hitboxes
 
+            elif event.key == pygame.K_s:
+                save_level(platforms)
+            elif event.key == pygame.K_l:
+                platforms = load_level()
+
 
 
 
@@ -55,6 +77,10 @@ while running:
 
 
     player.update(dt, keys, platforms)
+
+    if not player.alive:
+        print("GAME OVER")
+        player.alive = True
 
 
 
@@ -102,3 +128,7 @@ while running:
     dt = clock.tick(60) / 1000
 
 pygame.quit()
+
+
+
+
