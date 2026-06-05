@@ -75,7 +75,6 @@ while running:
                 editing = not editing
 
         if event.type == pygame.MOUSEBUTTONDOWN and editing:
-            print("building")
             mx,my = pygame.mouse.get_pos()
 
             world_x = mx + camera_x
