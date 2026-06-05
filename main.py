@@ -9,6 +9,7 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 dt = 0
+show_hitboxes = False
 
 camera_x = 0
 camera_y = 0
@@ -43,6 +44,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w or event.key == pygame.K_SPACE:
                 player.jumper_buffer = 0.1
+            elif event.key == pygame.K_h:
+                show_hitboxes = not show_hitboxes
 
 
 
@@ -69,9 +72,9 @@ while running:
         sign.draw(screen, camera_x, camera_y)
 
     for slime in slimes:
-        slime.draw(screen, camera_x, camera_y)
+        slime.draw(screen, camera_x, camera_y, show_hitboxes)
 
-    player.draw(screen, camera_x, camera_y)
+    player.draw(screen, camera_x, camera_y, show_hitboxes)
 
 
     pygame.display.flip()

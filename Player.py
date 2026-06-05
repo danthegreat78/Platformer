@@ -81,7 +81,7 @@ class Player:
 
 
 
-    def draw(self, screen, camera_x, camera_y):
+    def draw(self, screen, camera_x, camera_y, show_hitboxes):
 
         draw_x = self.hitbox.x - camera_x
         draw_y = self.hitbox.y - camera_y
@@ -97,4 +97,6 @@ class Player:
         screen.blit(image,
                     (self.hitbox.x - camera_x + offset.x, self.hitbox.y - camera_y + offset.y))
 
-        pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)
+        if(show_hitboxes):
+
+            pygame.draw.rect(screen, "red", pygame.Rect(draw_x, draw_y, self.hitbox.width, self.hitbox.height), 2)
