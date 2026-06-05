@@ -1,6 +1,7 @@
 import pygame
 from Player import Player
 from Platform import Platform
+from Sign import Sign
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -15,10 +16,20 @@ player = Player(640, 100)
 
 platforms = [
     Platform(0,680,1000,40),
-    Platform(400,500,300,40)
+    Platform(400,500,300,40),
+    Platform(1800,680,200,40)
 ]
 
+font = pygame.font.SysFont("arial", 30)
+
+signs = [
+    Sign(350, 100, "Welcome to Platformer!", font)
+]
+
+
+
 while running:
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,6 +58,9 @@ while running:
     for platform in platforms:
 
         platform.draw(screen, "green", camera_x, camera_y)
+
+    for sign in signs:
+        sign.draw(screen, camera_x, camera_y)
 
     player.draw(screen, camera_x, camera_y)
 
