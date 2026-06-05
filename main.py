@@ -30,6 +30,9 @@ show_hitboxes = False
 
 editing= False
 
+dragging_platform = False
+start_pos = None
+
 camera_x = 0
 camera_y = 0
 
@@ -80,7 +83,29 @@ while running:
             world_x = mx + camera_x
             world_y = my + camera_y
 
-            platforms.append(Platform(world_x, world_y, 100, 40))
+            dragging_platform = True
+            start_pos = (world_x,world_y)
+
+            #platforms.append(Platform(world_x, world_y, 100, 40))
+        if event.type == pygame.MOUSEBUTTONUP and editing:
+            if dragging_platform:
+                mx, my = pygame.mouse.get_pos()
+
+                end_x = mx + camera_x
+                end_y = my + camera_y
+
+                x = min(start_pos[0], end_x)
+                y = min(start_pos[1], end_y)
+
+                width = abs(end_x - start_pos[0])
+                height = abs(end_y - start_pos[1])
+
+                preview_rect = pygame.Rect(x - camera_x, y - camera_y,width,height)
+                platforms.append(Platform(x, y, width, height))
+
+                if width > 5 and height > 5:
+                    platforms.append(Platform(x,y,width,height))
+                dragging_platform = False
 
 
 
@@ -133,6 +158,20 @@ while running:
 
 
     player.draw(screen, camera_x, camera_y, show_hitboxes)
+
+    if dragging_platform:
+        mx, my = pygame.mouse.get_pos()
+
+        current_x = mx + camera_x
+        current_y = my + camera_y
+
+        x = min(start_pos[0], current_x)
+        y = min(start_pos[1], current_y)
+
+        width = abs(current_x - start_pos[0])
+        height = abs(current_y - start_pos[1])
+
+        pygame.draw.rect(screen, "yellow", pygame.Rect(x-camera_x, y-camera_y, width,height),2)
 
 
     pygame.display.flip()
