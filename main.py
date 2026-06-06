@@ -113,6 +113,8 @@ async def main():
 
                     elif event.key == pygame.K_e:
                         editing = not editing
+                    elif event.key == pygame.K_ESCAPE:
+                        state = "menu"
 
                 if event.type == pygame.MOUSEBUTTONDOWN and editing:
                     mx,my = pygame.mouse.get_pos()
