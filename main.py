@@ -33,6 +33,24 @@ def export_level(platforms):
 def mouse_over_ui(pos):
     return export_button.collidepoint(pos)
 
+def reset_game():
+    global player, camera_x ,camera_y, platforms, slimes
+
+    player = Player(640,100)
+
+    camera_x = 0
+    camera_y = 0
+
+    platforms = [
+        Platform(0,680,1000,40),
+        Platform(400,500,300,40),
+        Platform(1800,680,200,40)
+    ]
+    slimes = [
+        Slime(300,300),
+        Slime(100,100)
+    ]
+
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
@@ -98,6 +116,7 @@ async def main():
                     mx,my = pygame.mouse.get_pos()
 
                     if(play_button.collidepoint(mx,my)):
+                        reset_game()
                         state = "game"
                     if editor_button.collidepoint(mx,my):
                         state = "editor"

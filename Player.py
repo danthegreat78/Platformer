@@ -6,7 +6,7 @@ class Player:
         self.image = pygame.image.load("simple-player.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (800,800))
 
-        self.hitbox = pygame.Rect(x,y,100,250)
+        self.hitbox = pygame.Rect(x,y,100,290)
 
         self.velocity_y = 0
 
@@ -16,7 +16,7 @@ class Player:
 
         self.jumper_buffer = 0
 
-        self.draw_offset = pygame.Vector2(-332, -190)
+        self.draw_offset = pygame.Vector2(-332, -150)
 
         self.facing_right = False
 
