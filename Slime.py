@@ -26,7 +26,7 @@ class Slime:
                 left = self.hitbox.right - platform.rect.left
                 right = self.hitbox.right - platform.rect.left
                 bottom = self.hitbox.bottom - platform.rect.bottom
-                top = self.hitbox.bottom - platform.rect.left
+                top = platform.rect.bottom - self.hitbox.top
 
                 side = min(left,right,bottom,top)
 
