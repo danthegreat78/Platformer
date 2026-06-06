@@ -112,6 +112,7 @@ async def main():
                     world_x = mx + camera_x
                     world_y = my + camera_y
 
+                    #if not pygame.mouse.get_pos().collideRect - CONTINUE THIS
                     dragging_platform = True
                     start_pos = (world_x,world_y)
 
