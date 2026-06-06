@@ -54,6 +54,8 @@ camera_speed = 500
 
 export_text = ""
 show_export_box = False
+x_rect = pygame.Rect(500, 505, 200, 50)
+
 
 dragging_platform = False
 start_pos = None
@@ -77,6 +79,7 @@ slimes = [
 ]
 
 font = pygame.font.SysFont("arial", 30)
+x_rect_text = font.render("OK", True, "black")
 
 signs = [
     Sign(350, 100, "Welcome to Platformer!", font)
@@ -84,7 +87,7 @@ signs = [
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect
     while running:
 
         try:
@@ -119,10 +122,17 @@ async def main():
                 if event.type == pygame.MOUSEBUTTONDOWN and editing:
                     mx,my = pygame.mouse.get_pos()
 
+                    world_x = mx + camera_x
+                    world_y = my + camera_y
+
+                    if event.button == 3:
+                        for platform in platforms[:]:
+                            if platform.rect.collidepoint(world_x,world_y):
+                                platforms.remove(platform)
+
+
                     if not mouse_over_ui((mx,my)):
                         dragging_platform = True
-                        world_x = mx + camera_x
-                        world_y = my + camera_y
                         start_pos = (world_x, world_y)
 
 
@@ -151,6 +161,8 @@ async def main():
                         pyperclip.copy(export_text)
                         level_data = export_level(platforms)
                         print(level_data)
+                    elif x_rect.collidepoint(mx,my):
+                        show_export_box = False
 
 
 
@@ -242,6 +254,8 @@ async def main():
                     box_rect = pygame.Rect(200,200,800,300)
                     pygame.draw.rect(screen, "black", box_rect)
                     pygame.draw.rect(screen, "white", box_rect, 2)
+                    pygame.draw.rect(screen, "red", x_rect)
+                    screen.blit(x_rect_text, (575,510))
                     x = box_rect.x + 10
                     y = box_rect.y + 10
 
