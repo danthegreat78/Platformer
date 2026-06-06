@@ -1,7 +1,3 @@
-#running after first frame, shows title of platformer, seems to stop afterwards.
-#try commenting things that utilize other classes
-
-
 import asyncio
 import pygame
 from Player import Player
@@ -36,12 +32,17 @@ state = "menu"
 
 play_button = pygame.Rect(490,250,300,80)
 editor_button = pygame.Rect(490,380,300,80)
-menu_font = pygame.font.SysFont("arail", 50)
+menu_font = pygame.font.SysFont("arial", 50)
 
 editing= False
+editor_cam_x = 0
+editor_cam_y = 0
+camera_speed = 500
 
 dragging_platform = False
 start_pos = None
+
+
 
 camera_x = 0
 camera_y = 0
@@ -67,22 +68,31 @@ signs = [
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed
     while running:
 
         try:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                if state == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
+                    mx,my = pygame.mouse.get_pos()
+
+                    if(play_button.collidepoint(mx,my)):
+                        state = "game"
+                    if editor_button.collidepoint(mx,my):
+                        state = "editor"
+                        editing = True
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_w or event.key == pygame.K_SPACE:
                         player.jumper_buffer = 0.1
                     elif event.key == pygame.K_h:
                         show_hitboxes = not show_hitboxes
 
-                    elif event.key == pygame.K_s:
+                    elif event.key == pygame.K_s and keys[pygame.K_LCTRL]:
                         save_level(platforms)
-                    elif event.key == pygame.K_l:
+                    elif event.key == pygame.K_l and keys[pygame.K_LCTRL]:
                             platforms = load_level()
 
                     elif event.key == pygame.K_e:
@@ -120,52 +130,82 @@ async def main():
 
             keys = pygame.key.get_pressed()
 
+            if(state == "editor"):
+                if keys[pygame.K_a]:
+                    editor_cam_x -= camera_speed * dt
+                if keys[pygame.K_d]:
+                    editor_cam_x += camera_speed * dt
+                if keys[pygame.K_w] or keys[pygame.K_SPACE]:
+                    editor_cam_y -= camera_speed * dt
+                if keys[pygame.K_s]:
+                    editor_cam_y += camera_speed * dt
 
+            if state == "game":
 
-            player.update(dt, keys, platforms)
+                player.update(dt, keys, platforms)
 
             if not player.alive:
-                print("GAME OVER")
+                #print("GAME OVER")
                 player.alive = True
 
 
 
 
 
-            camera_x = player.hitbox.centerx - screen.get_width() // 2
-            camera_y = player.hitbox.centery - screen.get_height() // 2
 
-            screen.fill("purple")
-
-            for platform in platforms:
-
-                platform.draw(screen, "green", camera_x, camera_y)
-
-            for sign in signs:
-                sign.draw(screen, camera_x, camera_y)
-
-            for slime in slimes[:]:
-                slime.draw(screen, camera_x, camera_y, show_hitboxes)
-                slime.update(dt, keys, platforms)
-
-                if player.hitbox.colliderect(slime.hitbox):
-                    left = player.hitbox.right - slime.hitbox.left
-                    right = slime.hitbox.right - player.hitbox.left
-                    bottom = player.hitbox.bottom - slime.hitbox.top
-                    top = slime.hitbox.bottom - player.hitbox.top
-
-                    side = min(left,right,top,bottom)
-
-                    if side == bottom and player.velocity_y > 0:
-                        slimes.remove(slime)
-                        player.velocity_y = -500
-
-                    else:
-                        player.die()
+            if state == "game":
+                camera_x = player.hitbox.centerx - screen.get_width() // 2
+                camera_y = player.hitbox.centery - screen.get_height() // 2
 
 
+                screen.fill("purple")
+                player.draw(screen, camera_x, camera_y, show_hitboxes)
 
-            player.draw(screen, camera_x, camera_y, show_hitboxes)
+                for platform in platforms:
+
+                    platform.draw(screen, "green", camera_x, camera_y)
+
+                for sign in signs:
+                    sign.draw(screen, camera_x, camera_y)
+
+                for slime in slimes[:]:
+                    slime.draw(screen, camera_x, camera_y, show_hitboxes)
+                    slime.update(dt, keys, platforms)
+
+                    if player.hitbox.colliderect(slime.hitbox):
+                        left = player.hitbox.right - slime.hitbox.left
+                        right = slime.hitbox.right - player.hitbox.left
+                        bottom = player.hitbox.bottom - slime.hitbox.top
+                        top = slime.hitbox.bottom - player.hitbox.top
+
+                        side = min(left,right,top,bottom)
+
+                        if side == bottom and player.velocity_y > 0:
+                            slimes.remove(slime)
+                            player.velocity_y = -500
+
+                        else:
+                            player.die()
+            elif state == "menu":
+                screen.fill("black")
+                pygame.draw.rect(screen, "green", play_button)
+                play_text = font.render("PLAY", True, "black")
+                editor_text = font.render("EDITOR", True, "black")
+                pygame.draw.rect(screen, "blue", editor_button)
+                screen.blit(play_text,(play_button.x + 110, play_button.y + 20))
+                screen.blit(editor_text, (editor_button.x + 95, editor_button.y + 20))
+
+            elif state == "editor":
+                screen.fill("darkgrey")
+                camera_x = editor_cam_x
+                camera_y = editor_cam_y
+                for platform in platforms:
+                    platform.draw(screen, "green", camera_x, camera_y)
+
+
+
+
+
 
             if dragging_platform:
                 mx, my = pygame.mouse.get_pos()
