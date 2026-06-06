@@ -41,11 +41,6 @@ def reset_game():
     camera_x = 0
     camera_y = 0
 
-    platforms = [
-        Platform(0,680,1000,40),
-        Platform(400,500,300,40),
-        Platform(1800,680,200,40)
-    ]
     slimes = [
         Slime(300,300),
         Slime(100,100)
@@ -53,6 +48,10 @@ def reset_game():
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
+background = pygame.image.load("sky.png").convert_alpha()
+background = pygame.transform.scale(background, (1280,720))
+background_tile_width = background.get_width()
+background_tile_height = background.get_height()
 clock = pygame.time.Clock()
 running = True
 dt = 0
@@ -220,7 +219,10 @@ async def main():
                 camera_y = player.hitbox.centery - screen.get_height() // 2
 
 
-                screen.fill("purple")
+                offset_x = -camera_x % background_tile_width
+
+                for x in range(-background_tile_width,screen.get_width(), background_tile_width):
+                    screen.blit(background, (x + offset_x,0))
 
 
                 for platform in platforms:
