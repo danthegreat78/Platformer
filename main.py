@@ -8,7 +8,6 @@ from Sign import Sign
 from Slime import Slime
 import json
 import traceback
-import pyperclip
 def save_level(platforms):
     data = []
     print("saved")
@@ -156,7 +155,7 @@ async def main():
                     if export_button.collidepoint(mx,my):
                         export_text = export_level(platforms)
                         show_export_box = True
-                        pyperclip.copy(export_text)
+                        #js.navigator.clipboard.writeText(export_text) - doesn't work
                         level_data = export_level(platforms)
                         print(level_data)
                     elif x_rect.collidepoint(mx,my):
@@ -188,6 +187,7 @@ async def main():
                 player.update(dt, keys, platforms)
 
             if not player.alive:
+                state = "menu"
                 #print("GAME OVER")
                 player.alive = True
 
@@ -306,8 +306,8 @@ async def main():
 
             await asyncio.sleep(0)
 
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            print(e)
 
 asyncio.run(main())
 
