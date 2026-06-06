@@ -1,4 +1,6 @@
-print("STARTING MAIN")
+#running after first frame, shows title of platformer, seems to stop afterwards.
+#try commenting things that utilize other classes
+
 
 import asyncio
 import pygame
@@ -30,6 +32,11 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 show_hitboxes = False
+state = "menu"
+
+play_button = pygame.Rect(490,250,300,80)
+editor_button = pygame.Rect(490,380,300,80)
+menu_font = pygame.font.SysFont("arail", 50)
 
 editing= False
 
@@ -129,7 +136,6 @@ async def main():
             camera_y = player.hitbox.centery - screen.get_height() // 2
 
             screen.fill("purple")
-            pygame.draw.rect(screen, "white", (50, 50, 100, 100))
 
             for platform in platforms:
 
@@ -188,7 +194,8 @@ async def main():
 
 asyncio.run(main())
 
-pygame.quit()
+
+
 
 
 

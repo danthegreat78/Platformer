@@ -3,10 +3,8 @@ import pygame
 class Player:
 
     def __init__(self, x, y):
-        #self.image = pygame.image.load("simple-player.png").convert_alpha()
-        self.image = pygame.surface.Surface((100,100))
-        self.image.fill("blue")
-      #  self.image = pygame.transform.scale(self.image, (800,800))
+        self.image = pygame.image.load("simple-player.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (800,800))
 
         self.hitbox = pygame.Rect(x,y,100,250)
 
