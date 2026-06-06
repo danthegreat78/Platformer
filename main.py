@@ -113,10 +113,8 @@ async def main():
                         save_level(platforms)
                     elif event.key == pygame.K_l and keys[pygame.K_LCTRL]:
                             platforms = load_level()
-
-                    elif event.key == pygame.K_e:
-                        editing = not editing
                     elif event.key == pygame.K_ESCAPE:
+                        editing = False
                         state = "menu"
 
                 if event.type == pygame.MOUSEBUTTONDOWN and editing:
@@ -204,7 +202,7 @@ async def main():
 
 
                 screen.fill("purple")
-                player.draw(screen, camera_x, camera_y, show_hitboxes)
+
 
                 for platform in platforms:
 
@@ -212,6 +210,8 @@ async def main():
 
                 for sign in signs:
                     sign.draw(screen, camera_x, camera_y)
+
+
 
                 for slime in slimes[:]:
                     slime.draw(screen, camera_x, camera_y, show_hitboxes)
@@ -231,6 +231,7 @@ async def main():
 
                         else:
                             player.die()
+                player.draw(screen, camera_x, camera_y, show_hitboxes)
             elif state == "menu":
                 screen.fill("black")
                 pygame.draw.rect(screen, "green", play_button)
