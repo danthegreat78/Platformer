@@ -1,4 +1,3 @@
-#CONTINUE WITH ADDING EXPORT BUTTON
 import asyncio
 import pygame
 from Player import Player
@@ -28,6 +27,9 @@ def export_level(platforms):
     for p in platforms:
         data.append([p.rect.x, p.rect.y, p.rect.width, p.rect.height])
     return json.dumps(data)
+
+def mouse_over_ui(pos):
+    return export_button.collidepoint(pos)
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -109,12 +111,12 @@ async def main():
                 if event.type == pygame.MOUSEBUTTONDOWN and editing:
                     mx,my = pygame.mouse.get_pos()
 
-                    world_x = mx + camera_x
-                    world_y = my + camera_y
+                    if not mouse_over_ui((mx,my)):
+                        dragging_platform = True
+                        world_x = mx + camera_x
+                        world_y = my + camera_y
+                        start_pos = (world_x, world_y)
 
-                    #if not pygame.mouse.get_pos().collideRect - CONTINUE THIS
-                    dragging_platform = True
-                    start_pos = (world_x,world_y)
 
                 if event.type == pygame.MOUSEBUTTONUP and editing:
                     if dragging_platform:
@@ -143,6 +145,12 @@ async def main():
 
 
             keys = pygame.key.get_pressed()
+
+            mx,my = pygame.mouse.get_pos()
+
+            if dragging_platform and mouse_over_ui((mx,my)):
+                dragging_platform = False
+                start_pos = None
 
             if(state == "editor"):
                 if keys[pygame.K_a]:
@@ -213,11 +221,12 @@ async def main():
                 screen.fill("darkgrey")
                 camera_x = editor_cam_x
                 camera_y = editor_cam_y
+                for platform in platforms:
+                    platform.draw(screen, "green", camera_x, camera_y)
                 pygame.draw.rect(screen, "orange", export_button)
                 export_text = font.render("EXPORT", True, "black")
                 screen.blit(export_text, (22,30))
-                for platform in platforms:
-                    platform.draw(screen, "green", camera_x, camera_y)
+
 
 
 
