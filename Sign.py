@@ -8,7 +8,7 @@ class Sign:
         self.text = text
         self.font = font
 
-        self.image = font.render(text, font, True, (255,255,255))
+        self.image = font.render(text, True, (255,255,255))
 
     def draw(self, screen, camera_x, camera_y):
 

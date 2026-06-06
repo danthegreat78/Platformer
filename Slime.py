@@ -4,8 +4,10 @@ class Slime:
 
     def __init__(self, x, y):
 
-        self.image = pygame.image.load("slime.png")
-        self.image = pygame.transform.scale(self.image, (500,500))
+       # self.image = pygame.image.load("slime.png")
+       # self.image = pygame.transform.scale(self.image, (500,500))
+        self.image = pygame.Surface((100,100))
+        self.image.fill("green")
         self.hitbox = pygame.Rect(x,y,130,95)
 
         self.offset = pygame.Vector2(-135,-145)
@@ -26,7 +28,7 @@ class Slime:
                 left = self.hitbox.right - platform.rect.left
                 right = self.hitbox.right - platform.rect.left
                 bottom = self.hitbox.bottom - platform.rect.bottom
-                top = self.hitbox.bottom - platform.rect.left
+                top = platform.rect.bottom - self.hitbox.top
 
                 side = min(left,right,bottom,top)
 
