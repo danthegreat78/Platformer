@@ -5,6 +5,8 @@ class Player:
     def __init__(self, x, y):
         self.image = pygame.image.load("simple-player.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (800,800))
+        self.image_walking = pygame.image.load("player_walking.png").convert_alpha()
+        self.image_walking= pygame.transform.scale(self.image_walking, (800,800))
 
         self.hitbox = pygame.Rect(x,y,100,290)
 
@@ -23,10 +25,17 @@ class Player:
         self.flip_offset = pygame.Vector2(-35,0)
 
         self.alive = True
+        self.walking = False
+
+        self.walking_frames = [self.image, self.image_walking]
+        self.current_frame = 0
+        self.frame_timer = 0
+        self.frame_interval = 0.2
 
 
 
     def update(self, dt, keys, platforms):
+
 
         if(self.jumper_buffer > 0):
             self.jumper_buffer -= dt
@@ -42,9 +51,14 @@ class Player:
         if keys[pygame.K_a]:
             self.hitbox.x -= speed * dt
             self.facing_right = True
-        if keys[pygame.K_d]:
+            self.walking = True
+
+        elif keys[pygame.K_d]:
             self.hitbox.x += speed * dt
             self.facing_right = False
+            self.walking = True
+        else:
+            self.walking = False
 
         self.on_ground = False
 
@@ -84,16 +98,21 @@ class Player:
 
 
     def draw(self, screen, camera_x, camera_y, show_hitboxes):
-
+        print(self.walking)
         draw_x = self.hitbox.x - camera_x
         draw_y = self.hitbox.y - camera_y
 
-        image = self.image
+
+        if self.walking:
+
+            image = self.image_walking
+        else:
+            image = self.image
 
         if(self.facing_right):
             offset = self.draw_offset
         else:
-            image = pygame.transform.flip(self.image, True, False)
+            image = pygame.transform.flip(image, True, False)
             offset = self.draw_offset + self.flip_offset
 
         screen.blit(image,
