@@ -1,4 +1,6 @@
 import asyncio
+import textwrap
+
 import pygame
 from Player import Player
 from Platform import Platform
@@ -6,6 +8,7 @@ from Sign import Sign
 from Slime import Slime
 import json
 import traceback
+import pyperclip
 def save_level(platforms):
     data = []
     print("saved")
@@ -49,6 +52,9 @@ editor_cam_x = 0
 editor_cam_y = 0
 camera_speed = 500
 
+export_text = ""
+show_export_box = False
+
 dragging_platform = False
 start_pos = None
 
@@ -78,7 +84,7 @@ signs = [
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box
     while running:
 
         try:
@@ -138,6 +144,9 @@ async def main():
                     mx,my = pygame.mouse.get_pos()
 
                     if export_button.collidepoint(mx,my):
+                        export_text = export_level(platforms)
+                        show_export_box = True
+                        pyperclip.copy(export_text)
                         level_data = export_level(platforms)
                         print(level_data)
 
@@ -224,8 +233,33 @@ async def main():
                 for platform in platforms:
                     platform.draw(screen, "green", camera_x, camera_y)
                 pygame.draw.rect(screen, "orange", export_button)
-                export_text = font.render("EXPORT", True, "black")
-                screen.blit(export_text, (22,30))
+                export_label = font.render("EXPORT", True, "black")
+                screen.blit(export_label, (22,30))
+
+                if show_export_box:
+                    box_rect = pygame.Rect(200,200,800,300)
+                    pygame.draw.rect(screen, "black", box_rect)
+                    pygame.draw.rect(screen, "white", box_rect, 2)
+                    x = box_rect.x + 10
+                    y = box_rect.y + 10
+
+                    line = ""
+
+                    for char in export_text:
+                        test = line + char
+
+                        if font.size(test)[0] > box_rect.width - 20:
+                            screen.blit(font.render(line, True, "white"), (x, y))
+                            y += 30
+                            line = char
+                            if y > box_rect.bottom - 30:
+                                break
+                        else:
+                            line = test
+
+                    if line:
+                        screen.blit(font.render(line, True, "white"), (x, y))
+
 
 
 
