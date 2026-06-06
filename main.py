@@ -1,3 +1,4 @@
+#CONTINUE WITH ADDING EXPORT BUTTON
 import asyncio
 import pygame
 from Player import Player
@@ -22,6 +23,12 @@ def load_level():
 
     return [Platform(x,y,w,h) for x,y,w,h in data]
 
+def export_level(platforms):
+    data = []
+    for p in platforms:
+        data.append([p.rect.x, p.rect.y, p.rect.width, p.rect.height])
+    return json.dumps(data)
+
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
@@ -33,6 +40,7 @@ state = "menu"
 play_button = pygame.Rect(490,250,300,80)
 editor_button = pygame.Rect(490,380,300,80)
 menu_font = pygame.font.SysFont("arial", 50)
+export_button = pygame.Rect(10,10,150,80)
 
 editing= False
 editor_cam_x = 0
@@ -107,7 +115,6 @@ async def main():
                     dragging_platform = True
                     start_pos = (world_x,world_y)
 
-                    #platforms.append(Platform(world_x, world_y, 100, 40))
                 if event.type == pygame.MOUSEBUTTONUP and editing:
                     if dragging_platform:
                         mx, my = pygame.mouse.get_pos()
@@ -124,6 +131,12 @@ async def main():
                         if width > 5 and height > 5:
                             platforms.append(Platform(x,y,width,height))
                         dragging_platform = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mx,my = pygame.mouse.get_pos()
+
+                    if export_button.collidepoint(mx,my):
+                        level_data = export_level(platforms)
+                        print(level_data)
 
 
 
@@ -199,6 +212,9 @@ async def main():
                 screen.fill("darkgrey")
                 camera_x = editor_cam_x
                 camera_y = editor_cam_y
+                pygame.draw.rect(screen, "orange", export_button)
+                export_text = font.render("EXPORT", True, "black")
+                screen.blit(export_text, (22,30))
                 for platform in platforms:
                     platform.draw(screen, "green", camera_x, camera_y)
 
