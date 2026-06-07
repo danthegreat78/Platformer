@@ -24,11 +24,22 @@ def load_level():
 
     return [Platform(x,y,w,h) for x,y,w,h in data]
 
-def export_level(platforms):
-    data = []
-    for p in platforms:
-        data.append([p.rect.x, p.rect.y, p.rect.width, p.rect.height])
-    return json.dumps(data)
+def export_level(platforms, slimes, signs):
+    data = {
+        "player_start": [640,100],
+        "platforms": [
+            {"x": p.rect.x, "y": p.rect.y, "w": p.rect.width, "h": p.rect.height}
+            for p in platforms
+        ],
+        "slimes": [
+            [s.hitbox.x, s.hitbox.y]
+            for s in slimes
+        ],
+        "signs": [
+            [sg.pos.x, sg.pos.y, sg.text] for sg in signs
+        ]
+    }
+    return json.dumps(data, indent=2)
 
 def mouse_over_ui(pos):
     return export_button.collidepoint(pos)
@@ -206,10 +217,9 @@ async def main():
                                 object_dropdown_open = False
                                 break
                     if export_button.collidepoint(mx,my):
-                        export_text = export_level(platforms)
+                        export_text = export_level(platforms, editor_slimes, editor_signs)
                         show_export_box = True
-                        level_data = export_level(platforms)
-                        print(level_data)
+                        print(export_text)
                     elif x_rect.collidepoint(mx,my):
                         show_export_box = False
 
