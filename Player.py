@@ -52,13 +52,30 @@ class Player:
             self.hitbox.x -= speed * dt
             self.facing_right = True
             self.walking = True
+            self.frame_timer += dt
 
         elif keys[pygame.K_d]:
             self.hitbox.x += speed * dt
             self.facing_right = False
             self.walking = True
+            self.frame_timer += dt
         else:
             self.walking = False
+            self.frame_timer = 0
+
+        if self.walking and self.on_ground:
+            self.frame_timer += dt
+
+            if self.frame_timer > self.frame_interval:
+                self.frame_timer = 0
+                self.current_frame = (self.current_frame + 1) % len(self.walking_frames)
+
+        elif not self.on_ground:
+            self.current_frame = 1
+            self.frame_timer = 0
+        else:
+            self.current_frame = 0
+            self.frame_timer = 0
 
         self.on_ground = False
 
@@ -103,11 +120,12 @@ class Player:
         draw_y = self.hitbox.y - camera_y
 
 
-        if self.walking:
+        #if self.walking:
 
-            image = self.image_walking
-        else:
-            image = self.image
+       #     image = self.image_walking
+        #else:
+         #   image = self.image
+        image = self.walking_frames[self.current_frame] if self.walking else self.image
 
         if(self.facing_right):
             offset = self.draw_offset
