@@ -5,8 +5,8 @@ class Player:
     def __init__(self, x, y):
         self.image = pygame.image.load("simple-player.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (800,800))
-        self.image_walking = pygame.image.load("player_walking.png").convert_alpha()
-        self.image_walking= pygame.transform.scale(self.image_walking, (800,800))
+        self.image_walking = pygame.image.load("Player_walking.png").convert_alpha()
+        self.image_walking = pygame.transform.scale(self.image_walking, (800,800))
 
         self.hitbox = pygame.Rect(x,y,100,290)
 
@@ -30,12 +30,11 @@ class Player:
         self.walking_frames = [self.image, self.image_walking]
         self.current_frame = 0
         self.frame_timer = 0
-        self.frame_interval = 0.2
+        self.frame_interval = 0.02
 
 
 
     def update(self, dt, keys, platforms):
-
 
         if(self.jumper_buffer > 0):
             self.jumper_buffer -= dt
@@ -79,6 +78,11 @@ class Player:
 
         self.on_ground = False
 
+
+
+
+
+
         for platform in platforms:
 
             if self.hitbox.colliderect(platform.rect):
@@ -111,19 +115,17 @@ class Player:
 
 
 
-
-
     def draw(self, screen, camera_x, camera_y, show_hitboxes):
         print(self.walking)
         draw_x = self.hitbox.x - camera_x
         draw_y = self.hitbox.y - camera_y
 
 
-        #if self.walking:
+        if self.walking:
 
-       #     image = self.image_walking
-        #else:
-         #   image = self.image
+            image = self.image_walking
+        else:
+            image = self.image
         image = self.walking_frames[self.current_frame] if self.walking else self.image
 
         if(self.facing_right):

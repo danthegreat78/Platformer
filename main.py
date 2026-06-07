@@ -1,5 +1,4 @@
 import asyncio
-import textwrap
 
 import pygame
 from Player import Player
@@ -7,7 +6,6 @@ from Platform import Platform
 from Sign import Sign
 from Slime import Slime
 import json
-import traceback
 def save_level(platforms):
     data = []
     print("saved")
@@ -46,10 +44,11 @@ def reset_game():
         Slime(100,100)
     ]
 
+
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 background = pygame.image.load("sky.png").convert_alpha()
-background = pygame.transform.scale(background, (1280,720))
+background = pygame.transform.scale(background, (1280, 720))
 background_tile_width = background.get_width()
 background_tile_height = background.get_height()
 clock = pygame.time.Clock()
@@ -63,7 +62,7 @@ editor_button = pygame.Rect(490,380,300,80)
 menu_font = pygame.font.SysFont("arial", 50)
 export_button = pygame.Rect(10,10,150,80)
 
-editing= False
+editing = False
 editor_cam_x = 0
 editor_cam_y = 0
 camera_speed = 500
@@ -173,7 +172,6 @@ async def main():
                     if export_button.collidepoint(mx,my):
                         export_text = export_level(platforms)
                         show_export_box = True
-                        #js.navigator.clipboard.writeText(export_text) - doesn't work
                         level_data = export_level(platforms)
                         print(level_data)
                     elif x_rect.collidepoint(mx,my):
