@@ -78,6 +78,10 @@ x_rect = pygame.Rect(500, 505, 200, 50)
 dragging_platform = False
 start_pos = None
 object_dropdown_open = False
+object_types = ["Platform", "Slime", "Sign"]
+selected_object = object_types[0]
+dropdown_rect = pygame.Rect(170,10,120,30)
+dropdown_font = pygame.font.SysFont("arial", 20)
 
 
 
@@ -89,10 +93,13 @@ level1.load(font, "level1.json")
 
 player = Player(*level1.player_start)
 
+editor_slimes = []
+editor_signs = []
+
 platforms = [
-    Platform(0,680,1100,40, brick),
-    Platform(400,500,300,40, brick),
-    Platform(1800,680,200,40, brick)
+    Platform(0,680,1100,40),
+    Platform(400,500,300,40),
+    Platform(1800,680,200,40)
 ]
 
 slimes = [
@@ -111,7 +118,7 @@ signs = [
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font
     while running:
 
         try:
@@ -154,9 +161,20 @@ async def main():
                                 platforms.remove(platform)
 
 
-                    if not mouse_over_ui((mx,my)):
-                        dragging_platform = True
-                        start_pos = (world_x, world_y)
+                    #if not mouse_over_ui((mx,my)):
+                     #   dragging_platform = True
+                      #  start_pos = (world_x, world_y)
+                    if event.button == 1:
+
+                        if selected_object == "Platform" and not mouse_over_ui((mx,my)):
+                            dragging_platform = True
+                            start_pos = (world_x,world_y)
+                        else:
+                            dragging_platform = False
+
+
+                        if selected_object == "Slime"  and not mouse_over_ui((mx,my)):
+                            editor_slimes.append(Slime(world_x,world_y))
 
 
                 if event.type == pygame.MOUSEBUTTONUP and editing:
@@ -178,6 +196,15 @@ async def main():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mx,my = pygame.mouse.get_pos()
 
+                    if(dropdown_rect.collidepoint(mx,my)):
+                        object_dropdown_open = not object_dropdown_open
+                    elif object_dropdown_open:
+                        for i, obj in enumerate(object_types):
+                            option_rect = pygame.Rect(dropdown_rect.x, dropdown_rect.y + (i+1) * dropdown_rect.height, dropdown_rect.width, dropdown_rect.height)
+                            if option_rect.collidepoint(mx,my):
+                                selected_object = obj
+                                object_dropdown_open = False
+                                break
                     if export_button.collidepoint(mx,my):
                         export_text = export_level(platforms)
                         show_export_box = True
@@ -280,6 +307,11 @@ async def main():
                 camera_y = editor_cam_y
                 for platform in platforms:
                     platform.draw(screen, "green", camera_x, camera_y)
+
+                for slime in editor_slimes:
+                    slime.draw(screen, camera_x, camera_y, show_hitboxes)
+                for sign in editor_signs:
+                    sign.draw(screen, camera_x, camera_y)
                 pygame.draw.rect(screen, "orange", export_button)
                 export_label = font.render("EXPORT", True, "black")
                 screen.blit(export_label, (22,30))
@@ -310,6 +342,17 @@ async def main():
                     if line:
                         screen.blit(font.render(line, True, "white"), (x, y))
 
+                pygame.draw.rect(screen, "lightgrey", dropdown_rect)
+                text = dropdown_font.render(selected_object, True, "black")
+                screen.blit(text, (dropdown_rect.x + 34, dropdown_rect.y + 5))
+
+                if(object_dropdown_open):
+                    for i, obj in enumerate(object_types):
+                        option_rect = pygame.Rect(dropdown_rect.x, dropdown_rect.y + (i+1) * dropdown_rect.height, dropdown_rect.width, dropdown_rect.height)
+                        pygame.draw.rect(screen, "white", option_rect)
+                        pygame.draw.rect(screen, "black", option_rect, 1)
+                        option_text = dropdown_font.render(obj, True, "black")
+                        screen.blit(option_text, (option_rect.x+34, option_rect.y+2))
 
 
 
