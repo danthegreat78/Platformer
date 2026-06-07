@@ -1,6 +1,8 @@
 import asyncio
 
 import pygame
+
+from Level import Level
 from Player import Player
 from Platform import Platform
 from Sign import Sign
@@ -79,8 +81,11 @@ start_pos = None
 
 camera_x = 0
 camera_y = 0
+font = pygame.font.SysFont("arial", 30)
+level1 = Level()
+level1.load(font, "level1.json")
 
-player = Player(640, 100)
+player = Player(*level1.player_start)
 
 platforms = [
     Platform(0,680,1000,40),
@@ -93,12 +98,14 @@ slimes = [
     Slime(100,100)
 ]
 
-font = pygame.font.SysFont("arial", 30)
+
 x_rect_text = font.render("OK", True, "black")
 
 signs = [
     Sign(350, 100, "Welcome to Platformer!", font)
 ]
+
+
 
 
 async def main():
@@ -198,9 +205,11 @@ async def main():
                 if keys[pygame.K_s]:
                     editor_cam_y += camera_speed * dt
 
-            if state == "game":
+           # if state == "game":
 
-                player.update(dt, keys, platforms)
+                #level1.update(dt,player,keys)
+                #level1.draw(screen,camera_x,camera_y,show_hitboxes)
+                #player.update(dt, keys, platforms)
 
             if not player.alive:
                 state = "menu"
@@ -223,33 +232,36 @@ async def main():
                     screen.blit(background, (x + offset_x,0))
 
 
-                for platform in platforms:
+                level1.update(dt, player, keys)
+                level1.draw(screen, camera_x,camera_y, show_hitboxes)
+                #for platform in platforms:
 
-                    platform.draw(screen, "green", camera_x, camera_y)
+                 #   platform.draw(screen, "green", camera_x, camera_y)
 
-                for sign in signs:
-                    sign.draw(screen, camera_x, camera_y)
+                #for sign in signs:
+                 #   sign.draw(screen, camera_x, camera_y)
 
 
 
-                for slime in slimes[:]:
-                    slime.draw(screen, camera_x, camera_y, show_hitboxes)
-                    slime.update(dt, keys, platforms)
+                #for slime in slimes[:]:
 
-                    if player.hitbox.colliderect(slime.hitbox):
-                        left = player.hitbox.right - slime.hitbox.left
-                        right = slime.hitbox.right - player.hitbox.left
-                        bottom = player.hitbox.bottom - slime.hitbox.top
-                        top = slime.hitbox.bottom - player.hitbox.top
+               #     slime.draw(screen, camera_x, camera_y, show_hitboxes)
+                #    slime.update(dt, keys, platforms)
 
-                        side = min(left,right,top,bottom)
+                #    if player.hitbox.colliderect(slime.hitbox):
+                 #      left = player.hitbox.right - slime.hitbox.left
+                  #      right = slime.hitbox.right - player.hitbox.left
+                   #     bottom = player.hitbox.bottom - slime.hitbox.top
+                    #    top = slime.hitbox.bottom - player.hitbox.top
 
-                        if side == bottom and player.velocity_y > 0:
-                            slimes.remove(slime)
-                            player.velocity_y = -500
+                      #  side = min(left,right,top,bottom)
 
-                        else:
-                            player.die()
+                       # if side == bottom and player.velocity_y > 0:
+                        #    slimes.remove(slime)
+                         #   player.velocity_y = -500
+
+                        #else:
+                         #   player.die()
                 player.draw(screen, camera_x, camera_y, show_hitboxes)
             elif state == "menu":
                 screen.fill("black")

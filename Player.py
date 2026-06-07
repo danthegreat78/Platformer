@@ -22,7 +22,7 @@ class Player:
 
         self.facing_right = False
 
-        self.flip_offset = pygame.Vector2(-35,0)
+        self.flip_offset = pygame.Vector2(-36.5,0)
 
         self.alive = True
         self.walking = False
