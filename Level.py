@@ -56,7 +56,10 @@ class Level:
         with open(filename, "r") as f:
             data = json.load(f)
         self.player_start = data.get("player_start", [640,100])
-        self.platforms = [Platform(*p) for p in data["platforms"]]
+        self.platforms = [
+            Platform(p["x"], p["y"], p["w"], p["h"], p.get("image"))
+            for p in data["platforms"]
+        ]
         self.slimes = [Slime(*s) for s in data["slimes"]]
         self.signs = [Sign(*sg, font) for sg in data["signs"]]
 

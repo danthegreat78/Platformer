@@ -54,6 +54,7 @@ background = pygame.transform.scale(background, (1280, 720))
 background_tile_width = background.get_width()
 background_tile_height = background.get_height()
 clock = pygame.time.Clock()
+brick = "brick.png"
 running = True
 dt = 0
 show_hitboxes = False
@@ -76,6 +77,7 @@ x_rect = pygame.Rect(500, 505, 200, 50)
 
 dragging_platform = False
 start_pos = None
+object_dropdown_open = False
 
 
 
@@ -88,9 +90,9 @@ level1.load(font, "level1.json")
 player = Player(*level1.player_start)
 
 platforms = [
-    Platform(0,680,1000,40),
-    Platform(400,500,300,40),
-    Platform(1800,680,200,40)
+    Platform(0,680,1100,40, brick),
+    Platform(400,500,300,40, brick),
+    Platform(1800,680,200,40, brick)
 ]
 
 slimes = [
