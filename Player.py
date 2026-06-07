@@ -116,7 +116,6 @@ class Player:
 
 
     def draw(self, screen, camera_x, camera_y, show_hitboxes):
-        print(self.walking)
         draw_x = self.hitbox.x - camera_x
         draw_y = self.hitbox.y - camera_y
 
