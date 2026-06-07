@@ -160,6 +160,7 @@ async def main():
                         editing = False
                         state = "menu"
 
+
                 if event.type == pygame.MOUSEBUTTONDOWN and editing:
                     mx,my = pygame.mouse.get_pos()
 
@@ -315,6 +316,9 @@ async def main():
                 screen.fill("darkgrey")
                 camera_x = editor_cam_x
                 camera_y = editor_cam_y
+
+                camera_speed = 1500 if keys[pygame.K_LSHIFT] else 500
+
                 for platform in platforms:
                     platform.draw(screen, "green", camera_x, camera_y)
 
