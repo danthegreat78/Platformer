@@ -1,6 +1,7 @@
 import asyncio
 
 import pygame
+#import pygame.scrap
 
 from Level import Level
 from Player import Player
@@ -96,6 +97,8 @@ dropdown_font = pygame.font.SysFont("arial", 20)
 
 
 
+
+
 camera_x = 0
 camera_y = 0
 font = pygame.font.SysFont("arial", 30)
@@ -125,11 +128,16 @@ signs = [
     Sign(350, 100, "Welcome to Platformer!", font)
 ]
 
+import_button = pygame.Rect(10,100,150,50)
+import_text = font.render("IMPORT", True, "black")
+show_import_box = False
+import_text_box = ""
+
 
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box
     while running:
 
         try:
@@ -159,6 +167,30 @@ async def main():
                     elif event.key == pygame.K_ESCAPE:
                         editing = False
                         state = "menu"
+                    if show_import_box:
+                        if event.key == pygame.K_BACKSPACE:
+                            import_text_box = import_text_box[:-1]
+                        elif event.key == pygame.K_RETURN:
+                            try:
+                                data = json.loads(import_text_box)
+                                platforms.clear()
+                                editor_slimes.clear()
+                                editor_signs.clear()
+
+                                for p in data.get("platforms", []):
+                                    platforms.append(Platform(p["x"], p["y"], p["w"], p["h"]))
+                                for s in data.get("slimes", []):
+                                    editor_slimes.append(Slime(*s))
+                                for sg in data.get("signs", []):
+                                    editor_signs.append(Sign(sg[0], sg[1], sg[2], font))
+                                show_import_box = False
+                                import_text_box = ""
+                            except Exception as e:
+                                print("Invalid JSON", e)
+                        else:
+
+                            if event.unicode and event.unicode.isprintable():
+                                import_text_box += event.unicode
 
 
                 if event.type == pygame.MOUSEBUTTONDOWN and editing:
@@ -172,11 +204,10 @@ async def main():
                             if platform.rect.collidepoint(world_x,world_y):
                                 platforms.remove(platform)
 
-
-                    #if not mouse_over_ui((mx,my)):
-                     #   dragging_platform = True
-                      #  start_pos = (world_x, world_y)
                     if event.button == 1:
+
+                        if import_button.collidepoint((mx,my)):
+                            show_import_box = True
 
                         if selected_object == "Platform" and not mouse_over_ui((mx,my)):
                             dragging_platform = True
@@ -274,34 +305,7 @@ async def main():
 
                 level1.update(dt, player, keys)
                 level1.draw(screen, camera_x,camera_y, show_hitboxes)
-                #for platform in platforms:
 
-                 #   platform.draw(screen, "green", camera_x, camera_y)
-
-                #for sign in signs:
-                 #   sign.draw(screen, camera_x, camera_y)
-
-
-
-                #for slime in slimes[:]:
-
-               #     slime.draw(screen, camera_x, camera_y, show_hitboxes)
-                #    slime.update(dt, keys, platforms)
-
-                #    if player.hitbox.colliderect(slime.hitbox):
-                 #      left = player.hitbox.right - slime.hitbox.left
-                  #      right = slime.hitbox.right - player.hitbox.left
-                   #     bottom = player.hitbox.bottom - slime.hitbox.top
-                    #    top = slime.hitbox.bottom - player.hitbox.top
-
-                      #  side = min(left,right,top,bottom)
-
-                       # if side == bottom and player.velocity_y > 0:
-                        #    slimes.remove(slime)
-                         #   player.velocity_y = -500
-
-                        #else:
-                         #   player.die()
                 player.draw(screen, camera_x, camera_y, show_hitboxes)
             elif state == "menu":
                 screen.fill("black")
@@ -329,6 +333,31 @@ async def main():
                 pygame.draw.rect(screen, "orange", export_button)
                 export_label = font.render("EXPORT", True, "black")
                 screen.blit(export_label, (22,30))
+
+                pygame.draw.rect(screen, "yellow", import_button)
+                screen.blit(import_text, (import_button.x + 10, import_button.y + 10))
+
+                if show_import_box:
+                    box_rect = pygame.Rect(150,150,1000,400)
+                    pygame.draw.rect(screen, "black", box_rect)
+                    pygame.draw.rect(screen, "white", box_rect, 2)
+
+                    y = box_rect.y + 10
+                    x = box_rect.x + 10
+
+                    line = ""
+
+                    for char in import_text_box:
+                        test = line + char
+
+                        if font.size(test)[0] > box_rect.width - 20:
+                            screen.blit(font.render(line, True, "white"), (x,y))
+                            y += 30
+                            line = char
+                        else:
+                            line = test
+                    if line:
+                        screen.blit(font.render(line, True, (255,255,255)), (x,y))
 
                 if show_export_box:
                     box_rect = pygame.Rect(200,200,800,300)
