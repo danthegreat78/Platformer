@@ -16,6 +16,8 @@ class Level:
     def update(self, dt, player, keys):
 
         player.update(dt, keys, self.platforms)
+        if player.hitbox.y > 2000:
+            player.die()
 
         for slime in self.slimes[:]:
             slime.update(dt, keys, self.platforms)

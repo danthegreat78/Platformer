@@ -106,6 +106,7 @@ class Player:
 
                 elif min(left, right, bottom, top) == top:
                     self.hitbox.top = platform.rect.bottom
+                    self.velocity_y = 500
 
         if self.jumper_buffer > 0:
             if self.on_ground:
