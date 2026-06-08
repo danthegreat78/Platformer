@@ -1,14 +1,14 @@
 import asyncio
-
 import pygame
 #import pygame.scrap
-
+import platform
 from Level import Level
 from Player import Player
 from Platform import Platform
 from Sign import Sign
 from Slime import Slime
 import json
+
 def save_level(platforms):
     data = []
     print("saved")
@@ -72,15 +72,13 @@ def get_clipboard_text():
     return text
 
 
-async  def get_clipboard_text_web():
-    global clipboard_cache
+async def get_clipboard_text_web():
     try:
-        import js
-        if js.window.navigator.clipboard:
-            clipboard_cache = str(await js.window.navigator.clipboard.readText())
-            clipboard_cache = clipboard_cache.replace("\0", "").strip()
-    except Exception:
-        clipboard_cache = ""
+
+        return str(text)
+    except Exception as e:
+        print("Clipboard error", e)
+        return str(e)
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -162,12 +160,14 @@ import_button = pygame.Rect(10,100,150,50)
 import_text = font.render("IMPORT", True, "black")
 show_import_box = False
 import_text_box = ""
+import_ok_button = pygame.Rect(import_button.x + 1079, import_button.y, 60, 50)
+import_ok_text = font.render("X", True, "black")
 
 
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, clipboard_cache
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text
     while running:
 
         try:
@@ -203,8 +203,11 @@ async def main():
 
                             if hasattr(pygame, "scrap"):
                                 import_text_box += get_clipboard_text()
-                            else:
-                                import_text_box += clipboard_cache
+                            #else:
+
+                            #text = await get_clipboard_text_web()
+                            #import_text_box += text
+                            #import_text_box += "working"
 
                         if event.key == pygame.K_BACKSPACE:
                             import_text_box = import_text_box[:-1]
@@ -257,6 +260,9 @@ async def main():
 
                         if selected_object == "Slime"  and not mouse_over_ui((mx,my)):
                             editor_slimes.append(Slime(world_x,world_y))
+                        if show_import_box:
+                            if import_ok_button.collidepoint((mx,my)):
+                                show_import_box = False
 
 
                 if event.type == pygame.MOUSEBUTTONUP and editing:
@@ -383,6 +389,8 @@ async def main():
                     box_rect = pygame.Rect(150,150,1000,400)
                     pygame.draw.rect(screen, "black", box_rect)
                     pygame.draw.rect(screen, "white", box_rect, 2)
+                    pygame.draw.rect(screen, "red", import_ok_button)
+                    screen.blit(import_ok_text, (import_ok_button.x+20, import_ok_button.y + 10))
 
                     y = box_rect.y + 10
                     x = box_rect.x + 10
