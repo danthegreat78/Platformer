@@ -58,9 +58,39 @@ def reset_game():
         Slime(100,100)
     ]
 
+def get_clipboard_text():
+    text = ""
+    try:
+        raw = pygame.scrap.get(pygame.SCRAP_TEXT)
+        if raw:
+            text = raw.decode("utf-8")
+            text = text.replace("\0", "")
+            text = text.strip()
+    except Exception as e:
+        print(e)
+        pass
+    return text
+
+
+async  def get_clipboard_text_web():
+    global clipboard_cache
+    try:
+        import js
+        if js.window.navigator.clipboard:
+            clipboard_cache = str(await js.window.navigator.clipboard.readText())
+            clipboard_cache = clipboard_cache.replace("\0", "").strip()
+    except Exception:
+        clipboard_cache = ""
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
+
+try:
+    pygame.scrap.init()
+    pygame.scrap.set_mode(pygame.SCRAP_CLIPBOARD)
+except Exception as e:
+    print(e)
+
 background = pygame.image.load("sky.png").convert_alpha()
 background = pygame.transform.scale(background, (1280, 720))
 background_tile_width = background.get_width()
@@ -137,7 +167,7 @@ import_text_box = ""
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, clipboard_cache
     while running:
 
         try:
@@ -168,11 +198,20 @@ async def main():
                         editing = False
                         state = "menu"
                     if show_import_box:
+
+                        if event.key == pygame.K_v and (pygame.key.get_mods() & pygame.KMOD_CTRL):
+
+                            if hasattr(pygame, "scrap"):
+                                import_text_box += get_clipboard_text()
+                            else:
+                                import_text_box += clipboard_cache
+
                         if event.key == pygame.K_BACKSPACE:
                             import_text_box = import_text_box[:-1]
                         elif event.key == pygame.K_RETURN:
                             try:
-                                data = json.loads(import_text_box)
+                                clean_text = import_text_box.replace(("\0"), "").strip()
+                                data = json.loads(clean_text)
                                 platforms.clear()
                                 editor_slimes.clear()
                                 editor_signs.clear()
@@ -261,6 +300,9 @@ async def main():
             keys = pygame.key.get_pressed()
 
             mx,my = pygame.mouse.get_pos()
+
+            if not hasattr(pygame, "scrap"):
+                asyncio.create_task(get_clipboard_text_web())
 
             if dragging_platform and mouse_over_ui((mx,my)):
                 dragging_platform = False
