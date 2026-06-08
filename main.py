@@ -245,6 +245,10 @@ async def main():
                         for platform in platforms[:]:
                             if platform.rect.collidepoint(world_x,world_y):
                                 platforms.remove(platform)
+                        for slime in editor_slimes[:]:
+                            if slime.hitbox.collidepoint(world_x,world_y):
+                                editor_slimes.remove(slime)
+
 
                     if event.button == 1:
 
