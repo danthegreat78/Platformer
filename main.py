@@ -258,6 +258,10 @@ async def main():
                                     editor_slimes.append(Slime(*s))
                                 for sg in data.get("signs", []):
                                     editor_signs.append(Sign(sg[0], sg[1], sg[2], font))
+
+                                for p in data.get("powerups", []):
+                                    editor_powerups.append(Powerup(*p))
+
                                 show_import_box = False
                                 import_text_box = ""
                             except Exception as e:
@@ -302,7 +306,7 @@ async def main():
                             editor_slimes.append(Slime(world_x,world_y))
 
                         if selected_object == "Powerup" and not mouse_over_ui((mx,my)):
-                            editor_powerups.append(Powerup(world_x,world_y))
+                            editor_powerups.append(Powerup(world_x - 265,world_y - 167))
 
                         if show_import_box:
                             if import_ok_button.collidepoint((mx,my)):
