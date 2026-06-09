@@ -10,6 +10,7 @@ class Level:
     def __init__(self):
         self.platforms = []
         self.slimes = []
+        self.slime_spawns = []
         self.signs = []
         self.player_start = (640,100)
 
@@ -62,8 +63,11 @@ class Level:
             Platform(p["x"], p["y"], p["w"], p["h"], p.get("image"))
             for p in data["platforms"]
         ]
+        self.slime_spawns  = data["slimes"]
         self.slimes = [Slime(*s) for s in data["slimes"]]
         self.signs = [Sign(*sg, font) for sg in data["signs"]]
+    def reset(self):
+        self.slimes = [Slime(*s) for s in self.slime_spawns]
 
 
 

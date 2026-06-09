@@ -54,7 +54,7 @@ def reset_game():
     camera_x = 0
     camera_y = 0
 
-    slimes = [Slime(s.hitbox.x, s.hitbox.y) for s in editor_slimes]
+    level1.reset()
 
 def get_clipboard_text():
     text = ""

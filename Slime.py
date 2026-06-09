@@ -13,7 +13,7 @@ class Slime:
         self.velocity_y = 0
         self.gravity = 3000 # Original: 1800
         self.direction = 1 # right = 1, left = -1
-        self.speed = 120
+        self.speed = 300
 
         self.ground = None
 
