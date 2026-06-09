@@ -34,7 +34,7 @@ class Player:
 
 
 
-    def update(self, dt, keys, platforms):
+    def update(self, dt, keys, platforms, powerups):
 
         if(self.jumper_buffer > 0):
             self.jumper_buffer -= dt
@@ -107,6 +107,32 @@ class Player:
                 elif min(left, right, bottom, top) == top:
                     self.hitbox.top = platform.rect.bottom
                     self.velocity_y = 500
+
+        for powerup in powerups:
+            if self.hitbox.colliderect(powerup.hitbox):
+
+                left = self.hitbox.right - powerup.hitbox.left
+                right = powerup.hitbox.right - self.hitbox.left
+                bottom = self.hitbox.bottom - powerup.hitbox.top
+                top = powerup.hitbox.bottom - self.hitbox.top
+
+                side = min(left, right, top, bottom)
+
+                if side == bottom:
+                    self.hitbox.bottom = powerup.hitbox.top
+                    self.velocity_y = 0
+                    self.on_ground = True
+
+                elif side == right:
+                    self.hitbox.left = powerup.hitbox.right
+
+                elif side == left:
+                    self.hitbox.right = powerup.hitbox.left
+
+                if side == top:
+                    self.hitbox.top = powerup.hitbox.bottom
+                    #self.velocity_y = 500
+
 
         if self.jumper_buffer > 0:
             if self.on_ground:

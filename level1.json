@@ -45,5 +45,10 @@
       110.0,
       "WELCOME TO PLATFORMER!"
     ]
+  ],
+  "powerups": [
+    [
+      640,120
+    ]
   ]
 }

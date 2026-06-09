@@ -2,6 +2,7 @@ import pygame
 import json
 
 from Platform import Platform
+from Powerup import Powerup
 from Sign import Sign
 from Slime import Slime
 
@@ -20,7 +21,11 @@ class Level:
 
     def update(self, dt, player, keys):
 
-        player.update(dt, keys, self.platforms)
+        player.update(dt, keys, self.platforms, self.powerups)
+
+        for p in self.powerups:
+            p.update(player)
+
         if player.hitbox.y > 2000:
             player.die()
 
@@ -49,11 +54,15 @@ class Level:
         for slime in self.slimes:
             slime.draw(screen, camera_x, camera_y, show_hitboxes)
 
+        for powerup in self.powerups:
+            powerup.draw(screen, camera_x, camera_y, show_hitboxes)
+
     def save(self, filename = "level.json"):
         data = {
             "platforms": [[p.rect.x, p.rect.y, p.rect.width, p.rect.height] for p in self.platforms],
             "slimes": [[s.hitbox.x, s.hitbox.y] for s in self.slimes],
-            "signs": [[sg.x, sg.y, sg.text] for sg in self.signs]
+            "signs": [[sg.x, sg.y, sg.text] for sg in self.signs],
+            "powerups": [[p.pos.x, p.pos.y] for p in self.powerups]
 
         }
         with open(filename, "w") as f:
@@ -70,8 +79,11 @@ class Level:
         self.slime_spawns  = data["slimes"]
         self.slimes = [Slime(*s) for s in data["slimes"]]
         self.signs = [Sign(*sg, font) for sg in data["signs"]]
+        self.powerup_spawns = data.get("powerups", [])
+        self.powerups = [Powerup(*p) for p in self.powerup_spawns]
     def reset(self):
         self.slimes = [Slime(*s) for s in self.slime_spawns]
+        self.powerups = [Powerup(*p) for p in self.powerup_spawns]
 
 
 

@@ -13,7 +13,6 @@ class Powerup:
     def update(self, player):
 
         if self.hitbox.colliderect(player.hitbox):
-            print("colliding")
 
             bottom = self.hitbox.bottom - player.hitbox.top
             top = player.hitbox.bottom - self.hitbox.top
@@ -29,6 +28,7 @@ class Powerup:
                 player.hitbox.left = self.hitbox.right
             if side == top:
                 player.hitbox.bottom = self.hitbox.top
+                player.velocity_y = 500
             if side == bottom:
                 player.hitbox.top = self.hitbox.bottom
                 player.velocity_y = 300

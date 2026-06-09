@@ -28,7 +28,7 @@ def load_level():
 
     return [Platform(x,y,w,h) for x,y,w,h in data]
 
-def export_level(platforms, slimes, signs):
+def export_level(platforms, slimes, signs, powerups):
     data = {
         "player_start": [640,100],
         "platforms": [
@@ -41,6 +41,10 @@ def export_level(platforms, slimes, signs):
         ],
         "signs": [
             [sg.pos.x, sg.pos.y, sg.text] for sg in signs
+        ],
+        "powerups": [
+            [p.pos.x, p.pos.y]
+            for p in powerups
         ]
     }
     return json.dumps(data, indent=2)
@@ -93,6 +97,7 @@ def reset_editor():
     level1.platforms = platforms
     level1.slimes = [Slime(s.hitbox.x, s.hitbox.y) for s in editor_slimes]
     level1.signs = editor_signs
+    level1.powerups = [Powerup(p.pos.x, p.pos.y) for p in editor_powerups]
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -132,7 +137,7 @@ x_rect = pygame.Rect(500, 505, 200, 50)
 dragging_platform = False
 start_pos = None
 object_dropdown_open = False
-object_types = ["Platform", "Slime", "Sign"]
+object_types = ["Platform", "Slime", "Sign", "Powerup"]
 selected_object = object_types[0]
 dropdown_rect = pygame.Rect(170,10,120,30)
 dropdown_font = pygame.font.SysFont("arial", 20)
@@ -151,6 +156,7 @@ player = Player(*level1.player_start)
 
 editor_slimes = []
 editor_signs = []
+editor_powerups = []
 
 platforms = [
     Platform(0,680,1100,40),
@@ -187,7 +193,7 @@ powerup = Powerup(640,-100)
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups
     while running:
 
         try:
@@ -244,6 +250,7 @@ async def main():
                                 platforms.clear()
                                 editor_slimes.clear()
                                 editor_signs.clear()
+                                editor_powerups.clear()
 
                                 for p in data.get("platforms", []):
                                     platforms.append(Platform(p["x"], p["y"], p["w"], p["h"]))
@@ -274,6 +281,9 @@ async def main():
                         for slime in editor_slimes[:]:
                             if slime.hitbox.collidepoint(world_x,world_y):
                                 editor_slimes.remove(slime)
+                        for powerup in editor_powerups:
+                            if powerup.hitbox.collidepoint(world_x, world_y):
+                                editor_powerups.remove(powerup)
 
 
                     if event.button == 1:
@@ -290,6 +300,10 @@ async def main():
 
                         if selected_object == "Slime"  and not mouse_over_ui((mx,my)):
                             editor_slimes.append(Slime(world_x,world_y))
+
+                        if selected_object == "Powerup" and not mouse_over_ui((mx,my)):
+                            editor_powerups.append(Powerup(world_x,world_y))
+
                         if show_import_box:
                             if import_ok_button.collidepoint((mx,my)):
                                 show_import_box = False
@@ -330,7 +344,7 @@ async def main():
                                 object_dropdown_open = False
                                 break
                     if export_button.collidepoint(mx,my):
-                        export_text = export_level(platforms, editor_slimes, editor_signs)
+                        export_text = export_level(platforms, editor_slimes, editor_signs, editor_powerups)
                         show_export_box = True
                         print(export_text)
                     elif x_rect.collidepoint(mx,my):
@@ -417,6 +431,10 @@ async def main():
                     slime.draw(screen, camera_x, camera_y, show_hitboxes)
                 for sign in editor_signs:
                     sign.draw(screen, camera_x, camera_y)
+
+                for powerup in editor_powerups:
+                    powerup.draw(screen, camera_x, camera_y, show_hitboxes)
+
                 pygame.draw.rect(screen, "orange", export_button)
                 export_label = font.render("EXPORT", True, "black")
                 screen.blit(export_label, (22,30))
