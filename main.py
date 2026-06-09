@@ -55,6 +55,7 @@ def reset_game():
     camera_y = 0
 
     level1.reset()
+    level1.load(font, "level1.json")
 
 def get_clipboard_text():
     text = ""
@@ -77,6 +78,18 @@ async def get_clipboard_text_web():
     except Exception as e:
         print("Clipboard error", e)
         return str(e)
+
+def reset_editor():
+    global player, camera_x, camera_y
+
+    player = Player(640,100)
+
+    camera_x = 0
+    camera_y = 0
+
+    level1.platforms = platforms
+    level1.slimes = [Slime(s.hitbox.x, s.hitbox.y) for s in editor_slimes]
+    level1.signs = editor_signs
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -161,11 +174,15 @@ import_text_box = ""
 import_ok_button = pygame.Rect(import_button.x + 1079, import_button.y, 60, 50)
 import_ok_text = font.render("X", True, "black")
 
+playtest_button = pygame.Rect(10, 160, 150, 50)
+playtest_text = font.render("PLAYTEST", True, "black")
+play_test = False
+
 
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test
     while running:
 
         try:
@@ -192,9 +209,15 @@ async def main():
                         save_level(platforms)
                     elif event.key == pygame.K_l and keys[pygame.K_LCTRL]:
                             platforms = load_level()
-                    elif event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_ESCAPE and not play_test:
                         editing = False
                         state = "menu"
+
+                    elif event.key == pygame.K_ESCAPE and play_test:
+                        play_test = False
+                        editing = True
+                        state = "editor"
+
                     if show_import_box:
 
                         if event.key == pygame.K_v and (pygame.key.get_mods() & pygame.KMOD_CTRL):
@@ -265,6 +288,12 @@ async def main():
                         if show_import_box:
                             if import_ok_button.collidepoint((mx,my)):
                                 show_import_box = False
+                        if playtest_button.collidepoint((mx,my)):
+                            play_test = True
+                            editing = False
+                            dragging_platform = False
+                            reset_editor()
+                            state = "game"
 
 
                 if event.type == pygame.MOUSEBUTTONUP and editing:
@@ -386,6 +415,9 @@ async def main():
 
                 pygame.draw.rect(screen, "yellow", import_button)
                 screen.blit(import_text, (import_button.x + 10, import_button.y + 10))
+
+                pygame.draw.rect(screen, "lightblue", playtest_button)
+                screen.blit(playtest_text, (playtest_button.x, playtest_button.y + 10))
 
                 if show_import_box:
                     box_rect = pygame.Rect(150,150,1000,400)
