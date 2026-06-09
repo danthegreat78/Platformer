@@ -1,3 +1,5 @@
+#try setting dragging platform to false somewhere where editor is initalized to stop the drawing after exiting game state and then going into editor state issue.
+
 import asyncio
 import pygame
 #import pygame.scrap
@@ -8,6 +10,7 @@ from Platform import Platform
 from Sign import Sign
 from Slime import Slime
 import json
+from Powerup import Powerup
 
 def save_level(platforms):
     data = []
@@ -178,11 +181,13 @@ playtest_button = pygame.Rect(10, 160, 150, 50)
 playtest_text = font.render("PLAYTEST", True, "black")
 play_test = False
 
+powerup = Powerup(640,-100)
+
 
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup
     while running:
 
         try:
@@ -384,8 +389,11 @@ async def main():
 
                 level1.update(dt, player, keys)
                 level1.draw(screen, camera_x,camera_y, show_hitboxes)
+                powerup.draw(screen, camera_x, camera_y, show_hitboxes)
+                powerup.update(player)
 
                 player.draw(screen, camera_x, camera_y, show_hitboxes)
+
             elif state == "menu":
                 screen.fill("black")
                 pygame.draw.rect(screen, "green", play_button)

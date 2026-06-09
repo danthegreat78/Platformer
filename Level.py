@@ -12,6 +12,10 @@ class Level:
         self.slimes = []
         self.slime_spawns = []
         self.signs = []
+
+        self.powerups = []
+        self.powerup_spawns = []
+
         self.player_start = (640,100)
 
     def update(self, dt, player, keys):
