@@ -46,6 +46,7 @@ def mouse_over_ui(pos):
     return export_button.collidepoint(pos)
 
 def reset_game():
+    print("RESETTING")
     global player, camera_x ,camera_y, platforms, slimes
 
     player = Player(640,100)
@@ -53,10 +54,7 @@ def reset_game():
     camera_x = 0
     camera_y = 0
 
-    slimes = [
-        Slime(300,300),
-        Slime(100,100)
-    ]
+    slimes = [Slime(s.hitbox.x, s.hitbox.y) for s in editor_slimes]
 
 def get_clipboard_text():
     text = ""
@@ -311,8 +309,8 @@ async def main():
 
             mx,my = pygame.mouse.get_pos()
 
-            if not hasattr(pygame, "scrap"):
-                asyncio.create_task(get_clipboard_text_web())
+            #if not hasattr(pygame, "scrap"):
+                #asyncio.create_task(get_clipboard_text_web())
 
             if dragging_platform and mouse_over_ui((mx,my)):
                 dragging_platform = False
