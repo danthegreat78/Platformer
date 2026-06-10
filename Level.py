@@ -5,6 +5,7 @@ from Platform import Platform
 from Powerup import Powerup
 from Sign import Sign
 from Slime import Slime
+from Double_Jump import Double_Jump
 
 
 class Level:
@@ -17,7 +18,12 @@ class Level:
         self.powerups = []
         self.powerup_spawns = []
 
+        self.double_jumps = []
+        self.double_spawns = []
+
         self.player_start = (640,100)
+
+        self.wait_till_onground = False
 
     def update(self, dt, player, keys):
 
@@ -25,6 +31,7 @@ class Level:
 
         for p in self.powerups:
             p.update(player)
+
 
         if player.hitbox.y > 2000:
             player.die()
@@ -44,6 +51,14 @@ class Level:
                     player.velocity_y = -500
                 else:
                     player.die()
+        for dj in self.double_jumps:
+            if player.hitbox.colliderect(dj.hitbox):
+                player.double_jump_used = False
+               # self.wait_till_onground = True
+
+       # if self.wait_till_onground and player.on_ground:
+        #    self.wait_till_onground = False
+         #   player.double_jump_used = False
 
     def draw(self, screen, camera_x, camera_y, show_hitboxes):
 
@@ -57,12 +72,16 @@ class Level:
         for powerup in self.powerups:
             powerup.draw(screen, camera_x, camera_y, show_hitboxes)
 
+        for dj in self.double_jumps:
+            dj.draw(screen, camera_x, camera_y, show_hitboxes)
+
     def save(self, filename = "level.json"):
         data = {
             "platforms": [[p.rect.x, p.rect.y, p.rect.width, p.rect.height] for p in self.platforms],
             "slimes": [[s.hitbox.x, s.hitbox.y] for s in self.slimes],
             "signs": [[sg.x, sg.y, sg.text] for sg in self.signs],
-            "powerups": [[p.pos.x, p.pos.y] for p in self.powerups]
+            "powerups": [[p.pos.x, p.pos.y] for p in self.powerups],
+            "double_jumps": [[dj.pos.x, dj.pos.y] for dj in self.double_jumps]
 
         }
         with open(filename, "w") as f:
@@ -81,6 +100,10 @@ class Level:
         self.signs = [Sign(*sg, font) for sg in data["signs"]]
         self.powerup_spawns = data.get("powerups", [])
         self.powerups = [Powerup(*p) for p in self.powerup_spawns]
+
+        self.double_spawns = data.get("double_jumps", [])
+        self.double_jumps = [Double_Jump(*dj) for dj in self.double_spawns]
+
     def reset(self):
         self.slimes = [Slime(*s) for s in self.slime_spawns]
         self.powerups = [Powerup(*p) for p in self.powerup_spawns]

@@ -31,6 +31,7 @@ class Player:
         self.current_frame = 0
         self.frame_timer = 0
         self.frame_interval = 0.02
+        self.double_jump_used = True
 
 
 
@@ -130,6 +131,7 @@ class Player:
                     self.hitbox.right = powerup.hitbox.left
 
                 if side == top:
+
                     self.hitbox.top = powerup.hitbox.bottom
                     self.velocity_y = 500
 
@@ -138,7 +140,12 @@ class Player:
             if self.on_ground:
                 self.velocity_y = -1000
                 self.on_ground = False
-                self.jump_request = False
+                self.jumper_buffer = 0
+            elif not self.double_jump_used:
+                self.double_jump_used = True
+                self.velocity_y = -1000
+                self.on_ground = False
+                self.jumper_buffer = 0
 
 
 

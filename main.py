@@ -11,6 +11,7 @@ from Sign import Sign
 from Slime import Slime
 import json
 from Powerup import Powerup
+from Double_Jump import Double_Jump
 
 def save_level(platforms):
     data = []
@@ -28,7 +29,7 @@ def load_level():
 
     return [Platform(x,y,w,h) for x,y,w,h in data]
 
-def export_level(platforms, slimes, signs, powerups):
+def export_level(platforms, slimes, signs, powerups, doublejumps):
     data = {
         "player_start": [640,100],
         "platforms": [
@@ -45,6 +46,10 @@ def export_level(platforms, slimes, signs, powerups):
         "powerups": [
             [p.pos.x, p.pos.y]
             for p in powerups
+        ],
+        "double_jumps": [
+            [dj.pos.x, dj.pos.y]
+            for dj in doublejumps
         ]
     }
     return json.dumps(data, indent=2)
@@ -98,6 +103,7 @@ def reset_editor():
     level1.slimes = [Slime(s.hitbox.x, s.hitbox.y) for s in editor_slimes]
     level1.signs = editor_signs
     level1.powerups = [Powerup(p.pos.x, p.pos.y) for p in editor_powerups]
+    level1.double_jumps = [Double_Jump(dj.pos.x, dj.pos.y) for dj in editor_double_jumps]
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -137,7 +143,7 @@ x_rect = pygame.Rect(500, 505, 200, 50)
 dragging_platform = False
 start_pos = None
 object_dropdown_open = False
-object_types = ["Platform", "Slime", "Sign", "Powerup"]
+object_types = ["Platform", "Slime", "Sign", "Powerup", "Double Jump"]
 selected_object = object_types[0]
 dropdown_rect = pygame.Rect(170,10,120,30)
 dropdown_font = pygame.font.SysFont("arial", 20)
@@ -189,11 +195,14 @@ play_test = False
 
 powerup = Powerup(640,-100)
 
+editor_double_jumps = []
+double_jumps = []
+
 
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups, double_jumps, editor_double_jumps
     while running:
 
         try:
@@ -289,6 +298,11 @@ async def main():
                             if powerup.hitbox.collidepoint(world_x, world_y):
                                 editor_powerups.remove(powerup)
 
+                        for dj in editor_double_jumps:
+                            if dj.hitbox.collidepoint(world_x,world_y):
+                                editor_double_jumps.remove(dj)
+
+
 
                     if event.button == 1:
 
@@ -307,6 +321,9 @@ async def main():
 
                         if selected_object == "Powerup" and not mouse_over_ui((mx,my)):
                             editor_powerups.append(Powerup(world_x - 265,world_y - 167))
+
+                        if selected_object == "Double Jump" and not mouse_over_ui((mx,my)):
+                            editor_double_jumps.append(Double_Jump(world_x - 300, world_y - 300))
 
                         if show_import_box:
                             if import_ok_button.collidepoint((mx,my)):
@@ -348,7 +365,7 @@ async def main():
                                 object_dropdown_open = False
                                 break
                     if export_button.collidepoint(mx,my):
-                        export_text = export_level(platforms, editor_slimes, editor_signs, editor_powerups)
+                        export_text = export_level(platforms, editor_slimes, editor_signs, editor_powerups, editor_double_jumps)
                         show_export_box = True
                         print(export_text)
                     elif x_rect.collidepoint(mx,my):
@@ -438,6 +455,9 @@ async def main():
 
                 for powerup in editor_powerups:
                     powerup.draw(screen, camera_x, camera_y, show_hitboxes)
+
+                for dj in editor_double_jumps:
+                    dj.draw(screen, camera_x,camera_y,show_hitboxes)
 
                 pygame.draw.rect(screen, "orange", export_button)
                 export_label = font.render("EXPORT", True, "black")
