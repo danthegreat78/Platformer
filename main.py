@@ -113,7 +113,7 @@ background = pygame.transform.scale(background, (1280, 720))
 background_tile_width = background.get_width()
 background_tile_height = background.get_height()
 clock = pygame.time.Clock()
-brick = "brick.png"
+brick = "Brick.png"
 running = True
 dt = 0
 show_hitboxes = False
@@ -407,8 +407,8 @@ async def main():
 
                 level1.update(dt, player, keys)
                 level1.draw(screen, camera_x,camera_y, show_hitboxes)
-                powerup.draw(screen, camera_x, camera_y, show_hitboxes)
-                powerup.update(player)
+                #powerup.draw(screen, camera_x, camera_y, show_hitboxes)
+                #powerup.update(player)
 
                 player.draw(screen, camera_x, camera_y, show_hitboxes)
 

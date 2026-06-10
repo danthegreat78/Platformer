@@ -131,7 +131,7 @@ class Player:
 
                 if side == top:
                     self.hitbox.top = powerup.hitbox.bottom
-                    #self.velocity_y = 500
+                    self.velocity_y = 500
 
 
         if self.jumper_buffer > 0:

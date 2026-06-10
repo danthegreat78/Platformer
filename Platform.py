@@ -8,7 +8,7 @@ class Platform:
 
             self.image = pygame.image.load(image).convert_alpha()
 
-            #self.image = pygame.transform.scale(self.image, (width, height))
+            #self.image = pygame.transform.scale(self.image, (10000, 10000))
         else:
             self.image = None
 
