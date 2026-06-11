@@ -32,6 +32,7 @@ class Player:
         self.frame_timer = 0
         self.frame_interval = 0.02
         self.double_jump_used = True
+        self.power_give = False
 
 
 
@@ -131,7 +132,7 @@ class Player:
                     self.hitbox.right = powerup.hitbox.left
 
                 if side == top:
-
+                    powerup.reward.visible = True
                     self.hitbox.top = powerup.hitbox.bottom
                     self.velocity_y = 500
 

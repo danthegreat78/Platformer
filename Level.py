@@ -53,14 +53,16 @@ class Level:
                     player.die()
         for dj in self.double_jumps:
             if player.hitbox.colliderect(dj.hitbox):
-                player.double_jump_used = False
+                if not dj.collected:
+                    player.double_jump_used = False
+                    dj.collected = True
                # self.wait_till_onground = True
 
        # if self.wait_till_onground and player.on_ground:
         #    self.wait_till_onground = False
          #   player.double_jump_used = False
 
-    def draw(self, screen, camera_x, camera_y, show_hitboxes):
+    def draw(self, screen, camera_x, camera_y, show_hitboxes, player):
 
         for platform in self.platforms:
             platform.draw(screen, "green", camera_x, camera_y)
@@ -73,7 +75,7 @@ class Level:
             powerup.draw(screen, camera_x, camera_y, show_hitboxes)
 
         for dj in self.double_jumps:
-            dj.draw(screen, camera_x, camera_y, show_hitboxes)
+            dj.draw(screen, camera_x, camera_y, show_hitboxes, player)
 
     def save(self, filename = "level.json"):
         data = {
@@ -103,6 +105,9 @@ class Level:
 
         self.double_spawns = data.get("double_jumps", [])
         self.double_jumps = [Double_Jump(*dj) for dj in self.double_spawns]
+
+        for powerup, dj in zip(self.powerups, self.double_jumps):
+            powerup.reward = dj
 
     def reset(self):
         self.slimes = [Slime(*s) for s in self.slime_spawns]

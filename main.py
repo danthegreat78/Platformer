@@ -58,7 +58,6 @@ def mouse_over_ui(pos):
     return export_button.collidepoint(pos)
 
 def reset_game():
-    print("RESETTING")
     global player, camera_x ,camera_y, platforms, slimes
 
     player = Player(640,100)
@@ -104,6 +103,9 @@ def reset_editor():
     level1.signs = editor_signs
     level1.powerups = [Powerup(p.pos.x, p.pos.y) for p in editor_powerups]
     level1.double_jumps = [Double_Jump(dj.pos.x, dj.pos.y) for dj in editor_double_jumps]
+
+    for powerup, dj in zip(level1.powerups, level1.double_jumps):
+        powerup.reward = dj
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -260,6 +262,7 @@ async def main():
                                 editor_slimes.clear()
                                 editor_signs.clear()
                                 editor_powerups.clear()
+                                editor_double_jumps.clear()
 
                                 for p in data.get("platforms", []):
                                     platforms.append(Platform(p["x"], p["y"], p["w"], p["h"]))
@@ -270,6 +273,9 @@ async def main():
 
                                 for p in data.get("powerups", []):
                                     editor_powerups.append(Powerup(*p))
+
+                                for dj in data.get("double_jumps", []):
+                                    editor_double_jumps.append(Double_Jump(*dj))
 
                                 show_import_box = False
                                 import_text_box = ""
@@ -423,7 +429,7 @@ async def main():
 
 
                 level1.update(dt, player, keys)
-                level1.draw(screen, camera_x,camera_y, show_hitboxes)
+                level1.draw(screen, camera_x,camera_y, show_hitboxes, player)
                 #powerup.draw(screen, camera_x, camera_y, show_hitboxes)
                 #powerup.update(player)
 
@@ -457,7 +463,7 @@ async def main():
                     powerup.draw(screen, camera_x, camera_y, show_hitboxes)
 
                 for dj in editor_double_jumps:
-                    dj.draw(screen, camera_x,camera_y,show_hitboxes)
+                    dj.draw_no_power(screen, camera_x,camera_y,show_hitboxes)
 
                 pygame.draw.rect(screen, "orange", export_button)
                 export_label = font.render("EXPORT", True, "black")
