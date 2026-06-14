@@ -3,7 +3,7 @@
 import asyncio
 import pygame
 #import pygame.scrap
-import platform
+import platform as sysplatform
 from Level import Level
 from Player import Player
 from Platform import Platform
@@ -85,10 +85,54 @@ def get_clipboard_text():
 async def get_clipboard_text_web():
     try:
 
-        return str(text)
+        if sysplatform.system() == "Emscripten":
+            import platform as js_platform
+            from js import navigator
+            if navigator.clipboard is None:
+                print("Clipboard API not available")
+                return "NOT AVAILABLE"
+            text = await navigator.clipboard.readText()
+
+            return str(text)
     except Exception as e:
         print("Clipboard error", e)
         return str(e)
+
+def fetch_clipboard():
+    global clipboard_result, debug_text
+    try:
+        from js import navigator
+
+        clip = navigator.clipboard
+        if clip is None:
+            clipboard_result["text"] = ""
+            clipboard_result["pending"] = False
+            debug_text = "clipboard is none"
+            return
+
+        debug_text = "step3: calling readText (no await)"
+
+        def on_success(value):
+            global debug_text
+            clipboard_result["text"] = str(value)
+            clipboard_result["pending"] = False
+            debug_text = f"resolved: {str(value)!r}"
+
+        def on_error(err):
+            global debug_text
+            clipboard_result["text"] = ""
+            clipboard_result["pending"] = False
+            debug_text = f"rejected: {err}"
+
+        promise = clip.readText()
+        promise.then(on_success, on_error)
+        debug_text = "step4: callbacks attached"
+
+    except Exception as e:
+        clipboard_result["text"] = ""
+        clipboard_result["pending"] = False
+        debug_text = f"Clipboard error: {type(e).__name__}: {e}"
+
 
 def reset_editor():
     global player, camera_x, camera_y
@@ -200,11 +244,17 @@ powerup = Powerup(640,-100)
 editor_double_jumps = []
 double_jumps = []
 
+clipboard_result = {"text": None, "pending": False}
 
+debug_text = ""
+
+paste_button = pygame.Rect(import_ok_button.x + 80, import_ok_button.y, 80, 50)
+paste_text = font.render("PASTE", True, "black")
 
 
 async def main():
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups, double_jumps, editor_double_jumps
+
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups, double_jumps, editor_double_jumps, clipboard_result, debug_text, paste_text, paste_button
     while running:
 
         try:
@@ -242,10 +292,17 @@ async def main():
 
                     if show_import_box:
 
-                        if event.key == pygame.K_v and (pygame.key.get_mods() & pygame.KMOD_CTRL):
+                    #    if event.key == pygame.K_v and (pygame.key.get_mods() & pygame.KMOD_CTRL):
 
-                            if hasattr(pygame, "scrap"):
-                                import_text_box += get_clipboard_text()
+                     #       if sysplatform.system() == "Emscripten":
+
+                      #          if not clipboard_result["pending"]:
+                       #             clipboard_result["pending"] = True
+                        #            clipboard_result["text"] = None
+                         #           asyncio.create_task(fetch_clipboard())
+
+                            #elif hasattr(pygame, "scrap"):
+                             #   import_text_box += get_clipboard_text()
                             #else:
 
                             #text = await get_clipboard_text_web()
@@ -332,8 +389,28 @@ async def main():
                             editor_double_jumps.append(Double_Jump(world_x - 300, world_y - 300))
 
                         if show_import_box:
-                            if import_ok_button.collidepoint((mx,my)):
+                            if import_ok_button.collidepoint((mx, my)):
                                 show_import_box = False
+                                debug_text = ""
+                            if paste_button.collidepoint((mx, my)):
+
+                                if sysplatform.system() == "Emscripten":
+                                    from js import navigator
+                                    promise = navigator.clipboard.readText()
+
+                                    def success(text):
+                                        clipboard_result["text"] = str(text)
+
+                                    def fail(err):
+                                        print("clipboard failed", err)
+                                    promise.then(success, fail)
+                                elif hasattr(pygame, "scrap"):
+                                    import_text_box += get_clipboard_text()
+                                #if sysplatform.system() == "Emscripten":
+                                 #   if not clipboard_result["pending"]:
+                                  #      clipboard_result["pending"] = True
+                                   #     clipboard_result["text"] = None
+                                   #     fetch_clipboard()
                         if playtest_button.collidepoint((mx,my)):
                             play_test = True
                             editing = False
@@ -475,12 +552,16 @@ async def main():
                 pygame.draw.rect(screen, "lightblue", playtest_button)
                 screen.blit(playtest_text, (playtest_button.x, playtest_button.y + 10))
 
+
+
                 if show_import_box:
                     box_rect = pygame.Rect(150,150,1000,400)
                     pygame.draw.rect(screen, "black", box_rect)
                     pygame.draw.rect(screen, "white", box_rect, 2)
                     pygame.draw.rect(screen, "red", import_ok_button)
                     screen.blit(import_ok_text, (import_ok_button.x+20, import_ok_button.y + 10))
+                    pygame.draw.rect(screen, "lightgreen", paste_button)
+                    screen.blit(paste_text, (paste_button.x+5, paste_button.y+15))
 
                     y = box_rect.y + 10
                     x = box_rect.x + 10
@@ -541,7 +622,9 @@ async def main():
 
 
 
-
+            if clipboard_result["text"] is not None:
+                import_text_box += clipboard_result["text"]
+                clipboard_result["text"] = None
 
             if dragging_platform:
                 mx, my = pygame.mouse.get_pos()
@@ -557,7 +640,9 @@ async def main():
 
                 pygame.draw.rect(screen, "yellow", pygame.Rect(x-camera_x, y-camera_y, width,height),2)
 
-
+            if debug_text:
+                debug_surf = font.render(debug_text, True, "red")
+                screen.blit(debug_surf, (10, screen.get_height() - 40))
             pygame.display.flip()
             pygame.display.set_caption("Platformer")
 
