@@ -12,6 +12,7 @@ from Slime import Slime
 import json
 from Powerup import Powerup
 from Double_Jump import Double_Jump
+from Cutscene import Cutscene
 
 def save_level(platforms):
     data = []
@@ -251,10 +252,12 @@ debug_text = ""
 paste_button = pygame.Rect(import_ok_button.x + 80, import_ok_button.y, 80, 50)
 paste_text = font.render("PASTE", True, "black")
 
+cutscene = Cutscene(font)
+
 
 async def main():
 
-    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups, double_jumps, editor_double_jumps, clipboard_result, debug_text, paste_text, paste_button
+    global running, editing, dragging_platform, start_pos, platforms, dt, show_hitboxes, camera_x, camera_y, player, state, editor_cam_x, editor_cam_y, camera_speed, export_text, show_export_box, x_rect, object_dropdown_open, object_types, selected_object, dropdown_rect, dropdown_font, import_button, import_text, show_import_box, import_text_box, import_ok_button, import_ok_text, playtest_button, playtest_text, play_test, powerup, editor_powerups, double_jumps, editor_double_jumps, clipboard_result, debug_text, paste_text, paste_button, cutscene
     while running:
 
         try:
@@ -262,12 +265,18 @@ async def main():
                 if event.type == pygame.QUIT:
                     running = False
 
+                if state == "cutscene":
+                    cutscene.draw(screen)
+                    cutscene.handle_event(event)
+
                 if state == "menu" and event.type == pygame.MOUSEBUTTONDOWN:
                     mx,my = pygame.mouse.get_pos()
 
                     if(play_button.collidepoint(mx,my)):
-                        reset_game()
-                        state = "game"
+                        cutscene = Cutscene(font)
+                        state = "cutscene"
+                        #reset_game()
+                        #state = "game"
                     if editor_button.collidepoint(mx,my):
                         state = "editor"
                         editing = True
@@ -406,11 +415,6 @@ async def main():
                                     promise.then(success, fail)
                                 elif hasattr(pygame, "scrap"):
                                     import_text_box += get_clipboard_text()
-                                #if sysplatform.system() == "Emscripten":
-                                 #   if not clipboard_result["pending"]:
-                                  #      clipboard_result["pending"] = True
-                                   #     clipboard_result["text"] = None
-                                   #     fetch_clipboard()
                         if playtest_button.collidepoint((mx,my)):
                             play_test = True
                             editing = False
@@ -468,7 +472,15 @@ async def main():
                 dragging_platform = False
                 start_pos = None
 
-            if(state == "editor"):
+            if state == "cutscene":
+                cutscene.update(dt)
+                if cutscene.finished:
+                    reset_game()
+                    state = "game"
+
+
+
+            elif(state == "editor"):
                 if keys[pygame.K_a]:
                     editor_cam_x -= camera_speed * dt
                 if keys[pygame.K_d]:
